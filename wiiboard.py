@@ -25,7 +25,6 @@ COMMAND_READ_REGISTER   = b'\x17'
 INPUT_STATUS            = b'\x20'
 INPUT_READ_DATA         = b'\x21'
 EXTENSION_8BYTES        = b'\x32'
-# EXTENSION_8BYTES        = 32
 BUTTON_DOWN_MASK        = 0x08
 LED1_MASK               = 0x10
 BATTERY_MAX             = 200.0
@@ -68,7 +67,16 @@ class Wiiboard:
             self.connect(address)
     def connect(self, address):
         logger.info("Connecting to %s", address)
-        self.controlsocket.connect((address, 0x11))
+        connected = False
+        while not connected:
+            try:
+                self.controlsocket.connect((address, 0x11))
+                connected = True
+            except:
+                # Recreate Blutooth Sockets so that we can connect correctly
+                self.controlsocket = bluetooth.BluetoothSocket(bluetooth.L2CAP)
+                self.receivesocket = bluetooth.BluetoothSocket(bluetooth.L2CAP)
+                time.sleep(1.0)
         self.receivesocket.connect((address, 0x13))
         logger.debug("Sending mass calibration request")
         self.send(COMMAND_READ_REGISTER, b"\x04\xA4\x00\x24\x00\x18")
@@ -215,7 +223,14 @@ if __name__ == '__main__':
     import sys
     print socket.AF_INET
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(('', 5000))
+    connected = False
+    while not connected:
+        try:
+            s.connect(('', 5000))
+            connected = True
+        except:
+            pass
+
     if '-d' in sys.argv:
         logger.setLevel(logging.DEBUG)
         sys.argv.remove('-d')
@@ -224,8 +239,6 @@ if __name__ == '__main__':
     else:
         wiiboards = discover()
         logger.info("Found wiiboards: %s", str(wiiboards))
-        # if not wiiboards:
-        #     raise Exception("Press the red sync button on the board")
         address = wiiboards[0]
     with WiiboardPrint(address) as wiiprint:
         while True:
