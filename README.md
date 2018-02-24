@@ -1,5 +1,5 @@
 # wii-track
-Distributed inventory tracking using Wii, Rasberry Pi, and Arduino.
+Distributed inventory tracking using WiiFit, Rasberry Pi, and Arduino.
 
 ## Hackers
 - [Sumner Evans](https://github.com/sumnerevans)
