@@ -55,10 +55,11 @@ def lambda_handler(event, context):
             Key={
                 'id': item_id
             },
-            UpdateExpression="set info.color = :c, info.image = :i",
+            UpdateExpression="set info.color = :c, info.image = :i, info.missing_sources = :m",
             ExpressionAttributeValues={
                 ':c': color_csv,
                 ':i': b64,
+                ':m': [],
             },
         )
     else:
