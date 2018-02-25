@@ -43,9 +43,6 @@ T_SLEEP                 = 1.0
 URL                     = "https://yllu8ng6th.execute-api.us-west-2.amazonaws.com/wtf/hackcu"
 URL                     = "https://jyionju22m.execute-api.us-west-2.amazonaws.com/Testing/HackCuTesting"
 
-index = 0
-ready_to_increment = False
-
 # initialize the logger
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler() # or RotatingFileHandler
@@ -207,6 +204,8 @@ class WiiboardPrint(WiiboardSampling):
         self.nloop = 0
         self.mass = []
         self.totalMass = []
+        self.ready_to_increment = False
+        self.index = 0
     def on_sample(self):
         if len(self.mass) == N_SAMPLES:
             tmp_mass = self.mass[0]
@@ -219,9 +218,9 @@ class WiiboardPrint(WiiboardSampling):
                 self.nloop = 0
                 self.totalMass = []
                 self.light(0)
-                if ready_to_increment:
-                    index += 1
-                    ready_to_increment = False
+                if self.ready_to_increment:
+                    self.index += 1
+                    self.ready_to_increment = False
             self.mass = []
             self.status() # Stop the board from publishing mass data
             if self.nloop > N_LOOP:
@@ -246,7 +245,7 @@ if __name__ == '__main__':
     with WiiboardPrint(address) as wiiprint:
         while True:
             mass = wiiprint.loop()
-            a = requests.post(url=URL, json={'data': mass, 'id': index})
+            a = requests.post(url=URL, json={'data': mass, 'id': wiiprint.index})
             print('Response:', a.content)
             # sums = 0
             # n = 0
@@ -259,7 +258,7 @@ if __name__ == '__main__':
             #                 data['bottom_right'] - float(a.content))**2
             # print("The sd is: ", math.sqrt(sums / n))
             # print("average: ", a.content)
-            ready_to_increment = True
+            wiiprint.ready_to_increment = True
 
             # print(a.content)
             wiiprint.clear()

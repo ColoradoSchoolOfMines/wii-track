@@ -42,6 +42,8 @@ def lambda_handler(event, context):
     # Find all of the possible items with tolerances in the range.
     low = Decimal(average - max_tolerance)
     high = Decimal(average + max_tolerance)
+    print(type(low))
+    print(type(high))
     potential_items = table.scan(
         FilterExpression=Attr('weight').between(low, high),
     )
