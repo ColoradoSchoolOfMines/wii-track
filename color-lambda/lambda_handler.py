@@ -4,7 +4,7 @@ import base64
 import io
 from math import sqrt
 import json
-import datetime
+from datetime import datetime
 
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
