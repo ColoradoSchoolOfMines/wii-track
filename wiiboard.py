@@ -14,6 +14,8 @@ import logging
 import collections
 import bluetooth
 import socket
+import json
+import requests
 
 # Wiiboard Parameters
 CONTINUOUS_REPORTING    = b'\x04'
@@ -37,6 +39,7 @@ BLUETOOTH_NAME          = "Nintendo RVL-WBC-01"
 N_SAMPLES               = 200
 N_LOOP                  = 2
 T_SLEEP                 = 2
+URL                     = "https://jyionju22m.execute-api.us-west-2.amazonaws.com/Testing/HackCuTesting"
 
 # initialize the logger
 logger = logging.getLogger(__name__)
@@ -198,39 +201,28 @@ class WiiboardPrint(WiiboardSampling):
         WiiboardSampling.__init__(self, address, nsamples)
         self.nloop = 0
         self.mass = []
-        self.totalMass = 0
+        self.totalMass = []
     def on_sample(self):
         if len(self.mass) == N_SAMPLES:
-            self.totalMass = [sum(sample.values()) for sample in self.mass][0]
-            if self.totalMass != 0:
+            tmp_mass = self.mass[0]
+            if tmp_mass['top_right'] + tmp_mass['top_left'] + tmp_mass['bottom_left'] + tmp_mass['bottom_right'] != 0:
                 self.nloop += 1
+                self.totalMass.append(self.mass)
             else:
                 print("Mass was 0")
-            # print("%.3f %.3f"%(time.time(), sum(samples) / len(samples)))
             self.mass = []
             self.status() # Stop the board from publishing mass data
             if self.nloop > N_LOOP:
-                # self.close()
                 return self.totalMass
             self.light(1)
             time.sleep(T_SLEEP)
     def clear(self):
         self.nloop = 0
         self.mass = []
-        self.totalMass = 0
+        self.totalMass = []
 
 if __name__ == '__main__':
     import sys
-    print socket.AF_INET
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    connected = False
-    while not connected:
-        try:
-            s.connect(('', 5000))
-            connected = True
-        except:
-            pass
-
     if '-d' in sys.argv:
         logger.setLevel(logging.DEBUG)
         sys.argv.remove('-d')
@@ -243,7 +235,7 @@ if __name__ == '__main__':
     with WiiboardPrint(address) as wiiprint:
         while True:
             mass = wiiprint.loop()
-            print mass
-            s.send(str(mass))
+            a = requests.post(url = URL, json = mass)
+            print(a.content)
             wiiprint.clear()
 
