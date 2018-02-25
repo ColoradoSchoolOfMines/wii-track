@@ -9,7 +9,7 @@ threshold = 120
 
 
 def read_image(b):
-    f = io.BytesIO(b)
+    f = io.BytesIO(base64.b64decode(b))
     im = Image.open(f)
 
     sums = [0, 0, 0]
