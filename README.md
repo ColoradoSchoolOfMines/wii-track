@@ -1,4 +1,6 @@
 # wii-track
+![Alt text](./logo.svg)
+<img src="./logo.svg">
 Distributed inventory tracking using WiiFit, Rasberry Pi, and Arduino.
 
 ## Hackers
@@ -6,3 +8,4 @@ Distributed inventory tracking using WiiFit, Rasberry Pi, and Arduino.
 - [David Florness](https://github.com/edwargix)
 - [Jack Garner](https://github.com/jhgarner)
 - [Robby Zampino](https://github.com/robozman)
+
