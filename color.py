@@ -27,4 +27,4 @@ def read_image(b):
 
     sums = map(lambda x: sqrt(x / n), sums)
 
-    print(list(sums))
+    return sums
