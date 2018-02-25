@@ -13,5 +13,15 @@
     "name": "David",
     "weight": 67.18,
     "deviation": 1.0
+  },
+  {
+    "name": "Green Bag",
+    "weight": 1.5,
+    "deviation": 0.5
+  },
+  {
+    "name": "Black Bag",
+    "weight": 3.4,
+    "deviation": 0.5
   }
 ]
