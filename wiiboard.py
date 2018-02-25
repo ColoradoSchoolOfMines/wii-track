@@ -40,7 +40,7 @@ BLUETOOTH_NAME          = "Nintendo RVL-WBC-01"
 N_SAMPLES               = 200
 N_LOOP                  = 2
 T_SLEEP                 = 2
-URL                     = "https://jyionju22m.execute-api.us-west-2.amazonaws.com/Testing/HackCuTesting"
+URL                     = "https://yllu8ng6th.execute-api.us-west-2.amazonaws.com/wtf/hackcu"
 
 # initialize the logger
 logger = logging.getLogger(__name__)
@@ -237,17 +237,18 @@ if __name__ == '__main__':
         while True:
             mass = wiiprint.loop()
             a = requests.post(url=URL, json=mass)
-            sums = 0
-            n = 0
-            for sample in mass:
-                for data in sample:
-                    n += 1
-                    sums = (data['top_right'] +
-                            data['top_left'] +
-                            data['bottom_left'] +
-                            data['bottom_right'] - float(a.content))**2
-            print("The sd is: ", math.sqrt(sums / n))
-            print("average: ", a.content)
+            print(a.content)
+            # sums = 0
+            # n = 0
+            # for sample in mass:
+            #     for data in sample:
+            #         n += 1
+            #         sums = (data['top_right'] +
+            #                 data['top_left'] +
+            #                 data['bottom_left'] +
+            #                 data['bottom_right'] - float(a.content))**2
+            # print("The sd is: ", math.sqrt(sums / n))
+            # print("average: ", a.content)
 
             # print(a.content)
             wiiprint.clear()
