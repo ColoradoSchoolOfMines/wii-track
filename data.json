@@ -1,14 +1,14 @@
 [
   {
     "name": "Jack",
-    "weigth": 58.7,
+    "weight": 58.7,
     "deviation": 1.0
   },
   {
     "name": "Sumner",
     "weight": 45.1,
     "deviation": 1.0
-  }
+  },
   {
     "name": "David",
     "weight": 67.18,
