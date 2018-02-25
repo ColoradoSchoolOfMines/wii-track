@@ -65,6 +65,7 @@ def lambda_handler(event, context):
                     'missing_sources': ['weight'],
                     'time': str(datetime.now()),
                     'color': color_csv,
+                    'image': b64,
                 }
             }
         )
