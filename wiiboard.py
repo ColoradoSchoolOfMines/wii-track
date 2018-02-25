@@ -198,13 +198,13 @@ class WiiboardSampling(Wiiboard):
 
 # client class where we can re-define callbacks
 class WiiboardPrint(WiiboardSampling):
-    def __init__(self, address=None, nsamples=N_SAMPLES):
+    def __init__(self, address=None, start=0, nsamples=N_SAMPLES):
         WiiboardSampling.__init__(self, address, nsamples)
         self.nloop = 0
         self.mass = []
         self.totalMass = []
         self.ready_to_increment = False
-        self.index = 0
+        self.index = start
     def on_sample(self):
         if len(self.mass) == N_SAMPLES:
             tmp_mass = self.mass[0]
@@ -237,26 +237,34 @@ if __name__ == '__main__':
         sys.argv.remove('-d')
     if len(sys.argv) > 1:
         address = sys.argv[1]
+        if len(sys.argv) > 2:
+            start = int(sys.argv[2])
+        else:
+            start = 0
     else:
         wiiboards = discover()
         logger.info("Found wiiboards: %s", str(wiiboards))
         address = wiiboards[0]
-    with WiiboardPrint(address) as wiiprint:
+        start = 0
+    with WiiboardPrint(address, start) as wiiprint:
         while True:
             mass = wiiprint.loop()
             a = requests.post(url=URL, json={'data': mass, 'id': wiiprint.index})
             print('Response:', a)
-            # sums = 0
-            # n = 0
-            # for sample in mass:
-            #     for data in sample:
-            #         n += 1
-            #         sums = (data['top_right'] +
-            #                 data['top_left'] +
-            #                 data['bottom_left'] +
-            #                 data['bottom_right'] - float(a.content))**2
-            # print("The sd is: ", math.sqrt(sums / n))
-            # print("average: ", a.content)
+            n = 0
+            v = 0
+            xbar = 0
+            for sample in mass:
+                for data in sample:
+                    n += 1
+                    total = (data['top_right'] + data['top_left'] +
+                             data['bottom_left'] + data['bottom_right'])
+                    delta = total - xbar
+                    v += (n - 1) / n * delta * delta
+                    xbar += delta / n
+            print("n is: ", n)
+            print("v is: ", v)
+            print("average: ", xbar)
             wiiprint.ready_to_increment = True
 
             # print(a.content)
