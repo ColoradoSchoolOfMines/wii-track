@@ -20,11 +20,14 @@ void loop() {
   String recieved_data;
   int servo_data;
 
-  while (Serial.available() == 0);
-  recieved_data = Serial.readString();
-  servo_data = recieved_data.toInt();
-  myservo.write(servo_data);
-
+  if (Serial.available()) {
+    delay(15);
+    Serial.println("IN LOOP");
+    recieved_data = Serial.readString();
+    servo_data = recieved_data.toInt();
+    myservo.write(servo_data);
+    delay(15);
+  }
 
 
 //    for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
