@@ -246,7 +246,7 @@ if __name__ == '__main__':
         while True:
             mass = wiiprint.loop()
             a = requests.post(url=URL, json={'data': mass, 'id': wiiprint.index})
-            print('Response:', a.content)
+            print('Response:', a)
             # sums = 0
             # n = 0
             # for sample in mass:

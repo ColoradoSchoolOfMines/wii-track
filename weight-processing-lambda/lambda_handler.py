@@ -16,13 +16,13 @@ from scipy.stats import norm
 def lambda_handler(event, context):
     """Calculate what we think this object is."""
 
-    item_id = 1  # TODO: make this come from the event data
+    item_id = event['body']['id']
 
     print('DEBUG: EVENT:', event)
     # Calculate the average
     total = 0
     n = 0
-    for sample in json.loads(event['body']):
+    for sample in json.loads(event['body']['data']):
         print('DEBUG: Sample is: ', sample)
         for data in sample:
             print('DEBUG: data is', data)
@@ -40,10 +40,8 @@ def lambda_handler(event, context):
     max_tolerance = 4  # Hard coding this because IT'S A HACKATHON!!!
 
     # Find all of the possible items with tolerances in the range.
-    low = Decimal(average - max_tolerance)
-    high = Decimal(average + max_tolerance)
-    print(type(low))
-    print(type(high))
+    low = math.floor(average - max_tolerance)
+    high = math.ceil(average + max_tolerance)
     potential_items = table.scan(
         FilterExpression=Attr('weight').between(low, high),
     )
