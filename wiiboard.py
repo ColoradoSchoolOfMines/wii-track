@@ -41,7 +41,6 @@ N_SAMPLES               = 100
 N_LOOP                  = 4
 T_SLEEP                 = 1.0
 URL                     = "https://yllu8ng6th.execute-api.us-west-2.amazonaws.com/wtf/hackcu"
-URL                     = "https://jyionju22m.execute-api.us-west-2.amazonaws.com/Testing/HackCuTesting"
 
 # initialize the logger
 logger = logging.getLogger(__name__)
