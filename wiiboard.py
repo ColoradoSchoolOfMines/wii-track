@@ -37,10 +37,14 @@ TOP_LEFT                = 2
 BOTTOM_LEFT             = 3
 BLUETOOTH_NAME          = "Nintendo RVL-WBC-01"
 # WiiboardSampling Parameters
-N_SAMPLES               = 200
-N_LOOP                  = 2
-T_SLEEP                 = 2
+N_SAMPLES               = 100
+N_LOOP                  = 4
+T_SLEEP                 = 1.0
 URL                     = "https://yllu8ng6th.execute-api.us-west-2.amazonaws.com/wtf/hackcu"
+URL                     = "https://jyionju22m.execute-api.us-west-2.amazonaws.com/Testing/HackCuTesting"
+
+index = 0
+ready_to_increment = False
 
 # initialize the logger
 logger = logging.getLogger(__name__)
@@ -209,13 +213,19 @@ class WiiboardPrint(WiiboardSampling):
             if tmp_mass['top_right'] + tmp_mass['top_left'] + tmp_mass['bottom_left'] + tmp_mass['bottom_right'] != 0:
                 self.nloop += 1
                 self.totalMass.append(self.mass)
+                self.light(1)
             else:
                 print("Mass was 0")
+                self.nloop = 0
+                self.totalMass = []
+                self.light(0)
+                if ready_to_increment:
+                    index += 1
+                    ready_to_increment = False
             self.mass = []
             self.status() # Stop the board from publishing mass data
             if self.nloop > N_LOOP:
                 return self.totalMass
-            self.light(1)
             time.sleep(T_SLEEP)
     def clear(self):
         self.nloop = 0
@@ -236,8 +246,8 @@ if __name__ == '__main__':
     with WiiboardPrint(address) as wiiprint:
         while True:
             mass = wiiprint.loop()
-            a = requests.post(url=URL, json=mass)
-            print(a.content)
+            a = requests.post(url=URL, json={'data': mass, 'id': index})
+            print('Response:', a.content)
             # sums = 0
             # n = 0
             # for sample in mass:
@@ -249,6 +259,7 @@ if __name__ == '__main__':
             #                 data['bottom_right'] - float(a.content))**2
             # print("The sd is: ", math.sqrt(sums / n))
             # print("average: ", a.content)
+            ready_to_increment = True
 
             # print(a.content)
             wiiprint.clear()
