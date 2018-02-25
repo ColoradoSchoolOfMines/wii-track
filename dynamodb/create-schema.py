@@ -5,7 +5,7 @@ dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 
 print('Create Inventory table')
 
-table = dynamodb.create_table(
+inventory = dynamodb.create_table(
     TableName='Inventory',
     KeySchema=[
         {
@@ -33,4 +33,27 @@ table = dynamodb.create_table(
     },
 )
 
-print("Table status:", table.table_status, end='\r')
+print("Table status:", inventory.table_status, end='\r')
+
+print('Create InventoryTracking table')
+inventory_tracking = dynamodb.create_table(
+    TableName='InventoryTracking',
+    KeySchema=[
+        {
+            'AttributeName': 'id',
+            'KeyType': 'HASH',
+        },
+    ],
+    AttributeDefinitions=[
+        {
+            'AttributeName': 'id',
+            'AttributeType': 'N',
+        },
+    ],
+    ProvisionedThroughput={
+        'ReadCapacityUnits': 1,
+        'WriteCapacityUnits': 1,
+    },
+)
+
+print("Table status:", inventory_tracking.table_status, end='\r')

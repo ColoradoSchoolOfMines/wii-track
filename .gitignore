@@ -1,2 +1,4 @@
+__pycache__
 rpi/*jpg
 rpi/*png
+*.orig
