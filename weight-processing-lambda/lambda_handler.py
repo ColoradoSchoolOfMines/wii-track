@@ -2,7 +2,6 @@
 # Standard Libraries
 import json
 import math
-from decimal import Decimal
 from datetime import datetime
 
 # AWS Libraries
@@ -16,13 +15,15 @@ from scipy.stats import norm
 def lambda_handler(event, context):
     """Calculate what we think this object is."""
 
-    item_id = event['body']['id']
+    body = json.loads(event['body'])
+
+    item_id = body['id']
 
     print('DEBUG: EVENT:', event)
     # Calculate the average
     total = 0
     n = 0
-    for sample in json.loads(event['body']['data']):
+    for sample in body['data']:
         print('DEBUG: Sample is: ', sample)
         for data in sample:
             print('DEBUG: data is', data)
@@ -54,10 +55,10 @@ def lambda_handler(event, context):
         diff = float(item['weight']) - average
         sd = float(item['info']['deviation'])
         max_height = 1 / (math.sqrt(2 * math.pi) * sd)
-        confidence = norm.pdf(0, loc=diff, scale=sd) / max_height * 100
+        confidence = math.floor(norm.pdf(0, loc=diff, scale=sd) / max_height * 100)
         confidences.append({
             'item': item['name'],
-            'confidence': confidence,
+            'confidence': (confidence),
         })
 
     inventory_tracking = dynamodb.Table('InventoryTracking')
@@ -96,7 +97,6 @@ def lambda_handler(event, context):
             }
         )
 
-    response = {
+    return {
         'statusCode': 200,
     }
-    return response
