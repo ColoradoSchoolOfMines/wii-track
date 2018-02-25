@@ -67,7 +67,7 @@ def lambda_handler(event, context):
 
     if existing_entry['Count'] == 1:
         # If the entry is not expecting weight, blow up.
-        if existing_entry['Items']['info']['missing_sources'][0] != 'weight':
+        if 'weight' not in existing_entry['Items']['info']['missing_sources']:
             return {
                 'statusCode': 500,
             }
