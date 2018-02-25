@@ -3,14 +3,16 @@
 import boto3
 import json
 import decimal
+import sys
+
+if len(sys.argv) != 3:
+    raise Exception("Invalid parameters")
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 
 inventory = dynamodb.Table('Inventory')
 
-inventory_file = input('Enter Inventory JSON file:')
-
-with open(inventory_file) as json_file:
+with open(sys.argv[1]) as json_file:
     items = json.load(json_file, parse_float=decimal.Decimal)
     for item in items:
         name = item['name']
@@ -29,10 +31,9 @@ with open(inventory_file) as json_file:
             }
         )
 
-inventory_tracking_file = input('Enter InventoryTracking JSON file:')
 inventory_tracking = dynamodb.Table('InventoryTracking')
 
-with open(inventory_tracking_file) as json_file:
+with open(sys.argv[2]) as json_file:
     items = json.load(json_file, parse_float=decimal.Decimal)
     for item in items:
         item_id = item['id']
@@ -40,7 +41,7 @@ with open(inventory_tracking_file) as json_file:
 
         print("Adding inventory tracking item:", item_id)
 
-        inventory.put_item(
+        inventory_tracking.put_item(
            Item={
                'id': item_id,
                'info': info,
