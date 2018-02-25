@@ -2,6 +2,7 @@
 import boto3
 import json
 import decimal
+import base64
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -30,8 +31,8 @@ class App(QWidget):
         self.title = 'wii-track'
         self.left = 10
         self.top = 10
-        self.width = 640
-        self.height = 700
+        self.width = 2048
+        self.height = 2048
         self.initUI()
 
         self.dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
@@ -47,7 +48,7 @@ class App(QWidget):
         # self.textbox.setAlignment(Qt.AlignCenter)
 
         self.label = QLabel(self)
-        self.label.resize(140, 40)
+        self.label.resize(300, 40)
         self.label.move(5, 20)
         self.label.setText("Enter ID To Lookup: ")
 
@@ -62,11 +63,15 @@ class App(QWidget):
         self.start_button.clicked.connect(self.on_click)
 
         self.data_view = QTreeWidget(self)
-        self.data_view.resize(400, 400)
-        self.data_view.move((self.width / 2) - 200, 100)
+        self.data_view.resize(2048, 500)
+        self.data_view.move(0, 100)
         self.data_view.setColumnCount(2)
-        self.data_view.setColumnWidth(0, 150)
+        self.data_view.setColumnWidth(0, 400)
         self.data_view.header().close()
+
+        self.image_view = QLabel(self)
+        self.image_view.resize(1000, 1000)
+        self.image_view.move(100, 600)
 
         self.show()
 
@@ -85,15 +90,20 @@ class App(QWidget):
         self.root_tree.setExpanded(True)
 
         for k, v in self.results['Items'][0]['info'].items():
-            print(k, v)
             if k == 'probabilities':
                 self.child_element = QTreeWidgetItem(['probabilities'])
-                for x, y in v.items():
-                    self.child_element_a = QTreeWidgetItem([str(x), str(y)])
-                    self.child_element.addChild(self.child_element_a)
+                for i in v:
+                    for x, y in i.items():
+                        self.child_element_a = QTreeWidgetItem([str(x), str(y)])
+                        self.child_element.addChild(self.child_element_a)
                 self.root_tree.addChild(self.child_element)
                 self.child_element.setExpanded(True)
-            # else if: k == 'color_data':
+            elif k == 'image':
+                f = open("/tmp/tmpImage.png", "wb")
+                f.write(base64.b64decode(v))
+                q = QPixmap("/tmp/tmpImage.png").scaled(1000, 1000)
+                self.image_view.setPixmap(q)
+                self.show()
             else:
                 self.child_element = QTreeWidgetItem([str(k), str(v)])
                 self.root_tree.addChild(self.child_element) 
