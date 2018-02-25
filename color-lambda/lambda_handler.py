@@ -21,8 +21,8 @@ def lambda_handler(event, context):
 
     sums = [0, 0, 0]
     n = 0
-    for x in range(im.size[0]):
-        for y in range(im.size[1]):
+    for x in range(0, im.size[0], 5):
+        for y in range(0, im.size[1], 5):
             pixel = im.getpixel((x, y))
             if pixel[0] < threshold or \
                pixel[1] < threshold or \
