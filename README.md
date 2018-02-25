@@ -1,6 +1,5 @@
 # wii-track
 ![Alt text](./logo.png)
-<img src="./logo.png">
 Distributed inventory tracking using WiiFit, Rasberry Pi, and Arduino.
 
 ## Hackers
