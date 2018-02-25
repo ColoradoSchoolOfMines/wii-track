@@ -3,13 +3,15 @@ from PIL import Image
 import base64
 import io
 from math import sqrt
+import json
 
 
 threshold = 120
 
 
-def read_image(b):
-    f = io.BytesIO(base64.b64decode(b))
+def lambda_handler(event, context):
+    j = json.loads(event['body'])
+    f = io.BytesIO(base64.b64decode(j['image']))
     im = Image.open(f)
 
     sums = [0, 0, 0]
@@ -27,4 +29,8 @@ def read_image(b):
 
     sums = map(lambda x: sqrt(x / n), sums)
 
-    return sums
+    response = {
+        'statusCode': 200,
+    }
+
+    return response
