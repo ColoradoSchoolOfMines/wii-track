@@ -46,11 +46,6 @@ def lambda_handler(event, context):
     )
 
     if existing_entry['Count'] == 1:
-        if 'image' not in existing_entry['Items']['info']['missing_sources']:
-            return {
-                'statusCode': 500,
-            }
-
         table.update_item(
             Key={
                 'id': item_id
