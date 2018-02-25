@@ -3,10 +3,11 @@
 import json
 import math
 from decimal import Decimal
+from datetime import datetime
 
 # AWS Libraries
 import boto3
-from boto3.dynamodb.conditions import Attr
+from boto3.dynamodb.conditions import Attr, Key
 
 # 3rd Party Libraries
 from scipy.stats import norm
@@ -14,6 +15,8 @@ from scipy.stats import norm
 
 def lambda_handler(event, context):
     """Calculate what we think this object is."""
+
+    item_id = 1  # TODO: make this come from the event data
 
     print('DEBUG: EVENT:', event)
     # Calculate the average
@@ -56,6 +59,42 @@ def lambda_handler(event, context):
             'item': item['name'],
             'confidence': confidence,
         })
+
+    inventory_tracking = dynamodb.Table('InventoryTracking')
+    existing_entry = inventory_tracking.query(
+        KeyConditionExpression=Key('id').eq(item_id),
+    )
+
+    if existing_entry['Count'] == 1:
+        # If the entry is not expecting weight, blow up.
+        if existing_entry['Items']['info']['missing_sources'] != 'weight':
+            return {
+                'statusCode': 500,
+            }
+
+        # TODO: merge confidences
+
+        inventory_tracking.update_item(
+            Key={
+                'id': item_id,
+            },
+            UpdateExpression='set info.missing_sources = :m, info.probabilities=:p',
+            ExpressionAttributeValues={
+                ':m': [],
+                ':p': confidences,
+            },
+        )
+    else:
+        inventory_tracking.put_item(
+            Item={
+                'id': item_id,
+                'info': {
+                    'missing_sources': ['image'],
+                    'probabilities': confidences,
+                    'time': str(datetime.now()),
+                }
+            }
+        )
 
     response = {
         'statusCode': 200,

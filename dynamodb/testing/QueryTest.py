@@ -23,3 +23,7 @@ potential_items = table.scan(
 for i in potential_items[u'Items']:
     print(i)
     print(json.dumps(i, cls=DecimalEncoder))
+
+print(table.query(
+    KeyConditionExpression=Key('weight').eq(1) & Key('name').eq('ohea'),
+))

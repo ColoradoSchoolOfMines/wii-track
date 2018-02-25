@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "info": {
+            "missing_sources": ["image"],
+            "probabilities": {
+                "Jack": 98.8471,
+                "Sumner": 0.0481
+            }
+            "time": "2018-02-25 07:18:14.708176"
+        }
+    },
+    {
+        "id": 2,
+        "info": {
+            "missing_sources": ["weight"],
+            "probabilities": {}
+            "color": "FF0000",
+            "time": "2018-02-25 07:19:14.708176"
+        }
+    }
+]
