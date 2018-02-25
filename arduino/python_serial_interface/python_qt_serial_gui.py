@@ -19,7 +19,7 @@ class App(QWidget):
         self.height = 480
         self.initUI()
 
-        self.arduino_serial = serial.Serial('/dev/ttyACM0', 9600, timeout=0)
+        self.arduino_serial = serial.Serial('/dev/ttyACM1', 9600, timeout=0)
 
     def initUI(self):
         self.setWindowTitle(self.title)
