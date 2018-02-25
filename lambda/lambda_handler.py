@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # Standard Libraries
 import json
+import math
 from decimal import Decimal
 
 # AWS Libraries
@@ -35,22 +36,26 @@ def lambda_handler(event, context):
 
     max_tolerance = 4  # Hard coding this because IT'S A HACKATHON!!!
 
+    # Find all of the possible items with tolerances in the range.
     low = Decimal(average - max_tolerance)
     high = Decimal(average + max_tolerance)
     potential_items = table.scan(
-        FilterExpression=Attr('weight').between(low, high)
+        FilterExpression=Attr('weight').between(low, high),
     )
 
     confidences = []
 
     for item in potential_items[u'Items']:
+        # Use a normal distribution to determine how confidant we are that this
+        # item is the item that was measured.
         diff = float(item['weight']) - average
         sd = float(item['info']['deviation'])
-        confidence = norm.pdf(0, loc=diff, scale=sd) / norm.pdf(0, scale=sd) * 100
-        confidences.append((
-            item['name'],
-            confidence,
-        ))
+        max_height = 1 / (math.sqrt(2 * math.pi) * sd)
+        confidence = norm.pdf(0, loc=diff, scale=sd) / max_height * 100
+        confidences.append({
+            'item': item['name'],
+            'confidence': confidence,
+        })
 
     response = {
         'statusCode': 200,
