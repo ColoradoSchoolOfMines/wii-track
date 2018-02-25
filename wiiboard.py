@@ -16,6 +16,7 @@ import bluetooth
 import socket
 import json
 import requests
+import math
 
 # Wiiboard Parameters
 CONTINUOUS_REPORTING    = b'\x04'
@@ -236,6 +237,15 @@ if __name__ == '__main__':
         while True:
             mass = wiiprint.loop()
             a = requests.post(url = URL, json = mass)
-            print(a.content)
+            sums = 0
+            n = 0
+            for sample in mass:
+                for data in sample:
+                    n += 1
+                    sums = (data['top_right'] + data['top_left'] + data['bottom_left'] + data['bottom_right'] - float(a.content))**2
+            print("The sd is: ", math.sqrt(sums / n))
+            print("average: ", a.content)
+
+            # print(a.content)
             wiiprint.clear()
 
