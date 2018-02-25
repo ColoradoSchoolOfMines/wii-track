@@ -4,7 +4,7 @@ import base64
 import io
 from math import sqrt
 import json
-import datetime
+from datetime import datetime
 
 import boto3
 from boto3.dynamodb.conditions import Attr, Key
@@ -55,10 +55,11 @@ def lambda_handler(event, context):
             Key={
                 'id': item_id
             },
-            UpdateExpression="set info.color = :c, info.image = :i",
+            UpdateExpression="set info.color = :c, info.image = :i, info.missing_sources = :m",
             ExpressionAttributeValues={
                 ':c': color_csv,
                 ':i': b64,
+                ':m': [],
             },
         )
     else:
