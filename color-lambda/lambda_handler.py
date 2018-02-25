@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+from PIL import Image
+import base64
+import io
+from math import sqrt
+import json
+import datetime
+
+import boto3
+from boto3.dynamodb.conditions import Attr, Key
+
+
+threshold = 120
+
+
+def lambda_handler(event, context):
+    j = json.loads(event['body'])
+    b64 = j['image']
+    f = io.BytesIO(base64.b64decode(b64))
+    im = Image.open(f)
+
+    sums = [0, 0, 0]
+    n = 0
+    for x in range(im.size[0]):
+        for y in range(im.size[1]):
+            pixel = im.getpixel((x, y))
+            if pixel[0] < threshold or \
+               pixel[1] < threshold or \
+               pixel[2] < threshold:
+                sums[0] += pixel[0] ** 2
+                sums[1] += pixel[1] ** 2
+                sums[2] += pixel[2] ** 2
+                n = n + 1
+
+    item_id = int(j['id'])
+
+    sums = map(lambda x: sqrt(x / n), sums)
+
+    color_csv = ','.join(map(str, sums))
+
+    dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
+    table = dynamodb.Table('InventoryTracking')
+
+    existing_entry = table.query(
+        KeyConditionExpression=Key('id').eq(item_id),
+    )
+
+    if existing_entry['Count'] == 1:
+        if 'image' not in existing_entry['Items']['info']['missing_sources']:
+            return {
+                'statusCode': 500,
+            }
+
+        table.update_item(
+            Key={
+                'id': item_id
+            },
+            UpdateExpression="set info.color = :c, info.image = :i",
+            ExpressionAttributeValues={
+                ':c': color_csv,
+                ':i': b64,
+            },
+        )
+    else:
+        table.put_item(
+            Item={
+                'id': item_id,
+                'info': {
+                    'missing_sources': ['weight'],
+                    'time': str(datetime.now()),
+                    'color': color_csv,
+                }
+            }
+        )
+
+    response = {
+        'statusCode': 200,
+    }
+
+    return response
