@@ -4,6 +4,10 @@ import serial
 import os
 import sys
 import time
+import boto3
+import json
+import base64
+import requests
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -31,7 +35,7 @@ class App(QWidget):
 
         pygame.init()
         pygame.camera.init()
-        self.cam = pygame.camera.Camera("/dev/video0", (width, height))
+        self.cam = pygame.camera.Camera("/dev/video0", (640, 480))
         self.cam.start()
         self.windowSurfaceObj = pygame.Surface
         # set_mode((wdth, height), 1, 16)
@@ -53,6 +57,10 @@ class App(QWidget):
         self.textbox.setAlignment(Qt.AlignCenter)
         self.textbox.setText("Current Angle: 90")
 
+        self.textboxi = QLineEdit(self)
+        self.textboxi.move(500, 0)
+        self.textboxi.resize(40, 40)
+
         # Create a button in the window
         self.slider = QSlider(Qt.Horizontal, self)
         self.slider.move((self.width / 2) - 140, 80)
@@ -61,7 +69,7 @@ class App(QWidget):
 
         self.label = QLabel(self)
         self.label.resize(640, 480)
-        self.label.move(0, 400)
+        self.label.move(0, 200)
 
         self.start_button = QPushButton(self)
         self.start_button.resize(100, 30)
@@ -79,7 +87,7 @@ class App(QWidget):
         self.capture_button.resize(100, 30)
         self.capture_button.move((self.width / 2) - 50, 120)
         self.capture_button.setText("📷 Shoot")
-        self.capture_button.clicked.connect(self.stop_video_timer)
+        self.capture_button.clicked.connect(self.capture_camera_image)
 
         # connect button to function on_click
         self.slider.sliderReleased.connect(self.on_click)
@@ -107,10 +115,14 @@ class App(QWidget):
 
         image = self.cam.get_image()
 
-        pygame.image.save(image, "cam.jpg")
+        # pygame.image.save(image, "cam.png")
+        data = pygame.image.tostring(image, "RGBA")
+        image =  QImage(data, 640, 480,  QImage.Format_ARGB32).rgbSwapped()
+        q = QPixmap.fromImage(image)
 
-        q = QPixmap("cam.jpg")
-        # q.loadFromData(pygame.image.tostring(image, "RGBA", False), "RGBA")
+        # q = QPixmap("cam.bmp")
+        # q = QPixmap.fromImage(image)
+        # q.loadFromData(pygame.image.tostring(image, "RGBA", ]False), "RGBA")
         # print(q.getPixmap())
 
         self.label.setPixmap(q)
@@ -118,10 +130,25 @@ class App(QWidget):
     @pyqtSlot()
     def capture_camera_image(self):
 
-        if self.timer.isActive():
-            image = self.cam.get_image()
+        if self.textboxi.text() is False:
+                return
 
-            pygame.image.save(image, "captured_image.png")
+        # if self.timer.isActive():
+        image = self.cam.get_image()
+
+        image = pygame.transform.scale(image, (150, 150))
+
+        pygame.image.save(image, "captured_image.png")
+
+        with open("captured_image.png", "rb") as image_file:
+               encoded_string = base64.b64encode(image_file.read())
+
+        r = requests.post("https://46mfsnafs3.execute-api.us-east-1.amazonaws.com/testing/hackcu_color", json={"image": encoded_string, "id": int(self.textboxi.text())})
+        print("saving into")
+        print(int(self.textboxi.text()))
+        print(r)
+           # print(r is None)
+
 
     @pyqtSlot()
     def start_video_timer(self):
