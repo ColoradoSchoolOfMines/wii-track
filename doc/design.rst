@@ -1,13 +1,10 @@
 Wii-Track
 #########
 
-In this document, we will
-
-a. give an overview of Wii-Track
-b. describe its overall system architecture and the reasons we chose the
-   architecture
-c. describe our hackathon implementation
-d. discuss how this project could be implemented at an industrial scale
+In this document, we will a) give an overview of Wii-Track; b) describe its
+overall system architecture and the reasons we chose the architecture; c)
+describe our hackathon implementation; and d) discuss how this project could be
+implemented at an industrial scale.
 
 Overview
 ========
@@ -26,26 +23,27 @@ Architecture
 ============
 
 At a high level, the Wii-Track architecture has three components: edge nodes,
-compute nodes, and a data store. We also built a few user-facing applications on
-top of this framework.
+compute nodes, and a data store. User-facing applications can be built on top of
+this framework (see `Hackathon Implementation`_ and `Industrial Scale
+Implementation`_ below).
 
 1. **Edge nodes:** these nodes collect data about items, and send the raw data
-   to AWS Lambda for processing.
-2. **Compute nodes:** in our case, we did all of the data processing on AWS
-   Lambda.
-3. **Data store:** for our prototype, we utilized the AWS DynamoDB NoSQL
-   database to store information about the items we processed.
+   to the compute nodes for processing.
+2. **Compute nodes:** these nodes process raw data using a variety of analytics.
+   In our case, these nodes were AWS Lambda functions.
+3. **Data store:** this stores information about the inventory and how it is
+   moving around. For our prototype, we utilized the AWS DynamoDB NoSQL database
+   to store information about the items we processed.
 
 There can be any number of edge nodes and compute nodes, and DynamoDB could be
-replaced by any database.
+replaced by any other datastore.
 
 The overall data flow is as follows::
 
     Edge nodes -> Compute nodes -> Data store -> User facing applications
 
-
 Here is a (non-comprehensive) list of considerations we discussed as we designed
-this architecture:
+our system architecture:
 
 - **Edge nodes may not have much compute power.** For our prototype, we used a
   Raspberry Pi 1 which only has a 600 MHz ARM processor. Starting up simple
@@ -78,21 +76,26 @@ this architecture:
   are able to concentrate on code, not deployment. This was great for not only
   the HackCU hackathon, but also for scalability in the long term.
 
-- **The data stored may not be very uniform.** If we have many different
-  versions of edge nodes, the data sent and stored may not be the same across
-  versions. For example, one version may send image data, while other nodes only
-  have infrared data. Additionally, the data is not highly relational; relations
-  between data are derived at an application layer. This variance in data that
-  we need to store led us to use AWS DynamoDB, a scalable, NoSQL database
-  running on Amazon infrastructure.
+- **The data stored will not be uniform.** If we have many different versions of
+  edge nodes, the data sent and stored may not be the same across versions. For
+  example, one version may send image data, while other nodes only have infrared
+  data. Additionally, the data is not highly relational; relations between data
+  are derived at an application layer. This variance in data that we need to
+  store led us to use AWS DynamoDB, a scalable, NoSQL database running on Amazon
+  infrastructure.
 
 - **We wanted to, and did, win the *Best Use of AWS* challenge.** One of the
   prizes at HackCU was for the application that best utilzed Amazon AWS. We
   wanted to enter the competition for this prize, and that was part of the
-  reason we used AWS Lambda and AWS DynamoDB. Our project won this prize.
+  reason we used AWS Lambda and AWS DynamoDB. Our entry into this competiton,
+  won.
+
+TODO: Dish?
 
 Hackathon Implementation
 ========================
+
+
 
 Industrial Scale Implementation
 ===============================

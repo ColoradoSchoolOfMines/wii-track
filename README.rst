@@ -8,6 +8,17 @@ database.
 .. image:: logo.png
    :alt: Wii-Track Logo
 
+Awards
+======
+
+This project won the following prizes at the HackCU_ hackathon.
+
+- **Judges Favorite**
+- **Dish Network - Asset Tracking Award**
+- **Amazon Web Services - Best Use of AWS**
+
+.. _HackCU: https://hackcu.org/
+
 Inspiration
 ===========
 
