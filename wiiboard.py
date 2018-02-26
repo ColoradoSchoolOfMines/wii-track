@@ -208,7 +208,7 @@ class WiiboardPrint(WiiboardSampling):
     def on_sample(self):
         if len(self.mass) == N_SAMPLES:
             tmp_mass = self.mass[0]
-            if tmp_mass['top_right'] + tmp_mass['top_left'] + tmp_mass['bottom_left'] + tmp_mass['bottom_right'] != 0:
+            if tmp_mass['top_right'] + tmp_mass['top_left'] + tmp_mass['bottom_left'] + tmp_mass['bottom_right'] > 0.5:
                 self.nloop += 1
                 self.totalMass.append(self.mass)
                 self.light(1)
