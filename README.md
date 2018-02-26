@@ -1,9 +1,9 @@
-# WiiTrack
+# Wii-Track
 Distributed inventory tracking using WiiFit, Rasberry Pi, and Arduino. Backed by
 the computing power of AWS Lambda, and the flexibility of the DynamoDB NoSQL
 database.
 
-![WiiTrack](./logo.png)
+![Wii-Track](./logo.png)
 
 ## Inspiration
 Currently, inventory tracking is only done at centralized locations. This leaves
@@ -11,7 +11,7 @@ many remote areas with limited inventory tracking capabilities. Our project is
 designed to solve this problem by enabling distributed inventory tracking.
 
 ## What it does
-WiiTrack uses weight and color sensors to identify objects.
+Wii-Track uses weight and color sensors to identify objects.
 
 The status of the entire system can be monitored from a simple user interface.
 Supervisors can view pictures of packages and remotely resolve any issues that
@@ -43,10 +43,10 @@ navigate the AWS portal.
 We learned how to use many exciting technologies including AWS Lambda, AWS
 DynamoDB, and the WiiFit API.
 
-## What's next for WiiTrack
-WiiTrack is designed to be highly extensible. Additional edge nodes can be added
-easily, and more complex analytics can be integrated into the AWS Lambda
-function. Additionally, WiiTrack can utilize different hardware for measuring
+## What's next for Wii-Track
+Wii-Track is designed to be highly extensible. Additional edge nodes can be
+added easily, and more complex analytics can be integrated into the AWS Lambda
+function. Additionally, Wii-Track can utilize different hardware for measuring
 characteristics of the inventory. For example, we could use infrared sensors in
 addition to the camera and scale that we utilize today. We can also enhance the
 supervisor portal for viewing packages remotely.
