@@ -377,7 +377,7 @@ identified quickly by inspecting the data from the nodes. This will reduce the
 wasted time trying to find the problem.
 
 We could create applications which notify supervisors of problems, and then
-present the data to supervisors need to identify the problem.
+present the data that supervisors need to identify the problem.
 
 Conclusion
 ==========
