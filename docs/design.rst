@@ -1,9 +1,9 @@
 Wii-Track
 #########
 
-In this document, we will a) give an overview of Wii-Track; b) describe its
-overall system architecture and the reasons we chose the architecture; c)
-describe our hackathon implementation; and d) discuss how this project could be
+In this document, we will give an overview of Wii-Track,describe its
+overall system architecture and the reasons we chose the architecture,
+describe our hackathon implementation; and discuss how this project could be
 implemented at an industrial scale.
 
 Overview
@@ -28,7 +28,7 @@ Overview
 __ https://github.com/ColoradoSchoolOfMines/wii-track
 
 Wii-Track is a system for package tracking designed for use in a variety of
-scenarios such as warehouses. The name Wii-Track comes from the fact that we
+scenarios such as organizing warehouses. The name Wii-Track comes from the fact that we
 used a WiiFit board as our "scale" for this prototype.
 
 Our overall goal was to make inventory tracking more cost-effective by utilizing
@@ -45,7 +45,7 @@ Architecture
 ============
 
 At a high level, the Wii-Track architecture has three components: edge nodes,
-compute nodes, and a data store. User-facing applications can be built on top of
+compute nodes, and a data nodes. User-facing applications can be built on top of
 this framework (see `Hackathon Implementation`_ and `Industrial Scale
 Implementation`_ below).
 
@@ -53,7 +53,7 @@ Implementation`_ below).
    to the compute nodes for processing.
 2. **Compute nodes:** these nodes process raw data using a variety of analytics.
    In our case, these nodes were AWS Lambda functions.
-3. **Data store:** this stores information about the inventory and how it is
+3. **data nodes:** this stores information about the inventory and how it is
    moving around. For our prototype, we utilized the AWS DynamoDB NoSQL database
    to store information about the items we processed.
 
@@ -62,7 +62,7 @@ replaced by any other database.
 
 The overall data flow is as follows::
 
-    Edge nodes -> Compute nodes -> Data store -> User facing applications
+    Edge nodes -> Compute nodes -> data nodes -> User facing applications
 
 Here is a (non-comprehensive) list of considerations we discussed as we designed
 our system architecture:
@@ -79,10 +79,10 @@ our system architecture:
   for data processing.
 
 - **Edge nodes may be difficult to update.** These embedded devices may be
-  installed in low-bandwidth areas and then possibly not replaced for years. If
-  we want to add new features, it would be difficult if computation were done at
-  the edge. By pushing all of the processing to Lambda, if we want to update how
-  the data is processed, it is very easy to update the Lambda function.
+  installed in low-bandwidth areas and then possibly not replaced for years.
+  It would be very difficult to add new features if those features required
+  deploying an update to the edge nodes. Instead, we do almost all computation in
+  lambda where pushing updates is easy.
 
 - **Server administration is hard.** AWS Lambda abstracts the server away, so we
   are able to concentrate on code, not deployment. This was great for not only
@@ -97,9 +97,8 @@ our system architecture:
   infrastructure.
 
 - |aws| One of the prizes at HackCU was for the application that best utilized
-  AWS. We wanted to enter the competition for this prize, and that was part of
-  the reason we used AWS Lambda and AWS DynamoDB. Our entry into this
-  competition, won.
+  AWS. This was part of the reason why we used AWS Lambda and AWS DynamoDB. Our
+  entry into this challenge won.
 
 .. This is an ugly hack. I can't easily nest any role inside of a bold, so I'm
    doing raw HTML instead...
@@ -151,12 +150,12 @@ the scale.
 The WiiFit board was connected over Bluetooth to one of our computers. We would
 have liked to make the Raspberry Pi communicate directly with the WiiFit board,
 but this was infeasible since the Raspberry Pi does not have Bluetooth
-capabilities. We used the `TODO`_ library to communicate with the WiiFit. It
-provided us with a constant stream of four data points: one weight measurement
-for each of the four quadrants of the board. We sent this data directly to AWS
-using the |requests|_ library.
+capabilities. We used the `wiiboard`_ library to communicate with the WiiFit. It
+provided us with a constant stream of data consisting of four data points. 
+Each data point gave the weight measurement for one of the four quadrants on the 
+board. We sent this data directly to AWS using the |requests|_ library.
 
-.. _TODO: url to the original source code
+.. _wiiboard: https://github.com/pierriko/wiiboard
 .. |requests| replace:: ``requests``
 .. _requests: http://docs.python-requests.org/en/master/
 
@@ -180,7 +179,13 @@ different computers, we had to create two Lambda functions for our prototype.
 Color Processing Lambda
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``color-lambda`` function processed data from the camera. It used
+The ``color-lambda`` function processed data from the camera. It used `Pillow`_
+to process the image and the root-mean-square formula to find the dominant color.
+Since we were filtering out a white background, this formula was better than the
+average because it compenstates for any white in the object that was accidentally
+filtered out.
+
+.. _Pillow: https://github.com/python-pillow/Pillow
 
 .. TODO: David and Jack describe libraries and method (whatever that crazy
    square rooting of stuff was)
@@ -193,20 +198,19 @@ to the weights already stored in a database table. The algorithm was as follows:
 
 1. Take all of the weight data that is being sent from the WiiFit and calculate
    the average weight.
-2. We query a database pre-seeded with information about inventory items to get
+2. Query a database pre-seeded with information about inventory items to get
    all inventory items within 4kg of the measurement. (We could be much more
    intelligent about this measurement, but for the hackathon, we just hardcoded
    it.)
-3. For each of the items returned from the query, we calculated a confidence
-   that the item on the scale is indeed that object. We used a very simple
-   metric for this: the value of the PMF of a normal distribution centered
-   around the expected weight, :math:`x` from the database with a standard
-   deviation :math:`d` also stored in the database. The hight of a normal
-   distribution is not 1, so we had to multiply ba a factor (:math:`1/k`) to
-   convert it to a percentage.
+3. Calculate a confidence that the item on the scale is indeed that object. 
+   We used a very simple metric for this: the value of the PMF of a normal 
+   distribution centered around the expected weight, :math:`x` from the database 
+   with a standard deviation :math:`d` also stored in the database. The hight of 
+   a normal distribution is not 1, so we had to multiply ba a factor (:math:`1/k`)
+   to convert it to a percentage.
 
    .. image:: img/confidence-interval.png
-4. We store our confidences in each item in the DynamoDB database using the
+4. Store the confidences of each item in the DynamoDB database using the
    ``boto3`` library by Amazon for manipulating AWS objects.
 
 Datastore
