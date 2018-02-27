@@ -68,11 +68,11 @@ Here is a (non-comprehensive) list of considerations we discussed as we designed
 our system architecture:
 
 - **Edge nodes may not have much compute power.** For our prototype, we used a
-  Raspberry Pi 1 which only has a 600 MHz ARM processor. Starting up simple
-  Python GUI applications can take over 30 seconds! However, compared to many
-  embedded devices, the Raspberry Pi has a large amount of compute power. Many
-  embedded devices don't have the ability to ``malloc`` memory on the heap, so
-  simple operations like string manipulation are not feasible.
+  Raspberry Pi 1 which only has a 600 MHz ARM processor. Starting up the
+  Python 3 interpreter can take over 30 seconds! However, compared to many
+  embedded devices, the Raspberry Pi has a large amount of compute power.
+  Operations such as string manipulation and floating point arithmetic are
+  not possible on many embedded devices.
 
   This led us to push all of the computation onto AWS Lambda. Edge nodes only
   send raw data and we can then utilize the power of the Amazon infrastructure
@@ -121,8 +121,8 @@ Edge Node
 
 .. note::
 
-    See the |a|_ and |r|_ directories and the |wii|_ file for the edge node source
-    code.
+    See the |a|_ and |r|_ directories and the |wii|_ file for the edge node
+    source code.
 
 .. |a| replace:: ``arduino``
 .. _a: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/arduino
@@ -331,6 +331,17 @@ Since all of the computational power is concentrated in the Lambda compute
 nodes, these computationally-intensive ML processes can be done on x86
 processors running on AWS infrastructure rather than on edge nodes which may not
 even have a traditional processor.
+
+Improved Handling and Traceability
+----------------------------------
+
+Our project utilized DynamoDB to allow storage of arbitrary data associated with
+a certain measurement. This is great for flexibility, but causes some problems
+with tracking packages' movement through a warehouse as there is not really a
+direct trail. To add this direct trail, we could either convert to a relational
+database or use a hybrid approach where we have relational data for tracking the
+package through time, and non-relational data to store the individual data
+points.
 
 Remote Supervision of Edge Nodes
 --------------------------------
