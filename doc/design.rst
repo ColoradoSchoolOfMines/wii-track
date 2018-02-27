@@ -84,8 +84,10 @@ our system architecture:
   store led us to use AWS DynamoDB, a scalable, NoSQL database running on Amazon
   infrastructure.
 
-- **We wanted to, and did, win the |Best Use of AWS|_ challenge.** One of the
-  prizes at HackCU was for the application that best utilized Amazon AWS. We
+.. role:: prize(emphasis)
+
+- **We wanted to, and did, win the :prize:`Best Use of AWS` challenge.** One of
+  the prizes at HackCU was for the application that best utilized Amazon AWS. We
   wanted to enter the competition for this prize, and that was part of the
   reason we used AWS Lambda and AWS DynamoDB. Our entry into this competition,
   won.
