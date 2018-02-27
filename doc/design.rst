@@ -84,15 +84,20 @@ our system architecture:
   store led us to use AWS DynamoDB, a scalable, NoSQL database running on Amazon
   infrastructure.
 
-.. role:: prize(emphasis)
+- |aws| One of the prizes at HackCU was for the application that best utilized
+  Amazon AWS. We wanted to enter the competition for this prize, and that was
+  part of the reason we used AWS Lambda and AWS DynamoDB. Our entry into this
+  competition, won.
 
-- **We wanted to, and did, win the :prize:`Best Use of AWS` challenge.** One of
-  the prizes at HackCU was for the application that best utilized Amazon AWS. We
-  wanted to enter the competition for this prize, and that was part of the
-  reason we used AWS Lambda and AWS DynamoDB. Our entry into this competition,
-  won.
+.. This is an ugly hack. I can't easily nest any role inside of a bold, so I'm
+   doing raw HTML instead...
+.. |aws| raw:: html
 
-TODO: Dish?
+   <strong>
+   We wanted to, and did, win the <em>Best Use of AWS</em> challenge.
+   </strong>
+
+.. TODO: Dish?
 
 Hackathon Implementation
 ========================
@@ -104,7 +109,19 @@ to view the data in the datastore, and a client to control the edge node.
 Edge Node
 ---------
 
-TODO: Robby: fill these in.
+.. note::
+
+    See the |a|_ and |r|_ directories and the |wii|_ file for the edge node source
+    code.
+
+.. |a| replace:: ``arduino``
+.. _a: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/arduino
+.. |r| replace:: ``rpi``
+.. _r: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/rpi
+.. |wii| replace:: ``wiiboard.py``
+.. _wii: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/wiiboard.py
+
+.. TODO: Robby: fill these in.
 
 We implemented our edge node with two sensors: a scale (the WiiFit board) and a
 camera (Raspberry Pi camera mounted on an Arduino-controled servo). The
@@ -118,26 +135,84 @@ pictures of the package. Our prototype required user interaction to take a
 picture, but ideally, we would trigger this picture when the package is put on
 the scale.
 
-
-TODO: Jack: fill in details of this here
+.. TODO: Jack: fill in details of this here
 
 The WiiFit board was connected over Bluetooth to one of our computers. We would
 have liked to make the Raspberry Pi communicate directly with the WiiFit board,
 but this was infeasible since the Raspberry Pi does not have Bluetooth
 capabilities. We used the `TODO`_ library to communicate with the WiiFit. It
 provided us with a constant stream of four data points: one weight measurement
-for each of the four quadrants of the board. We sent this data directly to AWS 
+for each of the four quadrants of the board. We sent this data directly to AWS
+using the |requests|_ library.
 
 .. _TODO: url to the original source code
+.. |requests| replace:: ``requests``
+.. _requests: http://docs.python-requests.org/en/master/
 
 Compute Node
 ------------
 
+.. note::
+
+    See the |c|_ and |w|_ directories for the lambda function source code.
+
+.. |c| replace:: ``color-lambda``
+.. _c: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/color-lambda
+.. |w| replace:: ``weight-processing-lambda``
+.. _w: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/weight-processing-lambda
+
 We created two Lambda functions to process the data from the edge node. If the
 edge node were integrated into the single Raspberry Pi, we could have made it a
 single Lambda function. However, because the edge node was implemented on two
-different computers, we had to create two Lambdas for our prototype.
+different computers, we had to create two Lambda functions for our prototype.
+
+Color Processing Lambda
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``color-lambda`` function processed data from the camera. It used
+
+.. TODO describe libraries and method (whatever that crazy square rooting of
+   stuff was)
+
+Weight Processing Lambda
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``weight-processing-lambda`` took the weight data, and attempted to match it
+to the weights already stored in a database table. The algorithm was as follows:
+
+1. Take all of the weight data that is being sent from the WiiFit and calculate
+   the average weight.
+2. We query a database pre-seeded with information about inventory items to get
+   all inventory items within 4kg of the measurement. (We could be much more
+   intelligent about this measurement, but for the hackathon, we just hardcoded
+   it.)
+3. For each of the items returned from the query, we calculated a confidence
+   that the item on the scale is indeed that object. We used a very simple
+   metric for this: the value of the PMF of a normal distribution centered
+   around the expected weight, :math:`x` from the database with a standard
+   deviation :math:`d` also stored in the database. The hight of a normal
+   distribution is not 1, so we had to multiply ba a factor (:math:`1/k`) to
+   convert it to a percentage.
+
+   .. image:: img/confidence-interval.png
+4. We store our confidences in each item in the DynamoDB database.
+
+Datastore
+---------
+
+.. note::
+
+    See the |db|_ directory has code related to creating the database schema,
+    and some test data that we used during development.
+
+.. |db| replace:: ``dynamodb``
+.. _db: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/dynamodb
+
+We used AWS DynamoDB as our datastore. We used this in two places: to store
+manually-computed inventory weight information, and to store the results of our
+predictions from the Lambda functions.
 
 Industrial Scale Implementation
 ===============================
 
+Our hackathon implementation cut a lot of corners.
