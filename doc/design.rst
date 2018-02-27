@@ -84,10 +84,10 @@ our system architecture:
   store led us to use AWS DynamoDB, a scalable, NoSQL database running on Amazon
   infrastructure.
 
-- **We wanted to, and did, win the *Best Use of AWS* challenge.** One of the
-  prizes at HackCU was for the application that best utilzed Amazon AWS. We
+- **We wanted to, and did, win the |Best Use of AWS|_ challenge.** One of the
+  prizes at HackCU was for the application that best utilized Amazon AWS. We
   wanted to enter the competition for this prize, and that was part of the
-  reason we used AWS Lambda and AWS DynamoDB. Our entry into this competiton,
+  reason we used AWS Lambda and AWS DynamoDB. Our entry into this competition,
   won.
 
 TODO: Dish?
@@ -95,7 +95,47 @@ TODO: Dish?
 Hackathon Implementation
 ========================
 
+At HackCU, we implemented a proof of concept for this project. We built a
+prototype edge node, a prototype compute node, a prototype datastore, a client
+to view the data in the datastore, and a client to control the edge node.
 
+Edge Node
+---------
+
+TODO: Robby: fill these in.
+
+We implemented our edge node with two sensors: a scale (the WiiFit board) and a
+camera (Raspberry Pi camera mounted on an Arduino-controled servo). The
+Raspberry Pi was connected over TODO to the Arduino which controlled a servo
+over TODO. This servo swivelled the camera around. The camera was connected
+directly to the Raspberry Pi using TODO.
+
+We built a client application in Qt using Python which controlled the servo, and
+also showed a live image of the package. We also had the ability to take
+pictures of the package. Our prototype required user interaction to take a
+picture, but ideally, we would trigger this picture when the package is put on
+the scale.
+
+
+TODO: Jack: fill in details of this here
+
+The WiiFit board was connected over Bluetooth to one of our computers. We would
+have liked to make the Raspberry Pi communicate directly with the WiiFit board,
+but this was infeasible since the Raspberry Pi does not have Bluetooth
+capabilities. We used the `TODO`_ library to communicate with the WiiFit. It
+provided us with a constant stream of four data points: one weight measurement
+for each of the four quadrants of the board. We sent this data directly to AWS 
+
+.. _TODO: url to the original source code
+
+Compute Node
+------------
+
+We created two Lambda functions to process the data from the edge node. If the
+edge node were integrated into the single Raspberry Pi, we could have made it a
+single Lambda function. However, because the edge node was implemented on two
+different computers, we had to create two Lambdas for our prototype.
 
 Industrial Scale Implementation
 ===============================
+
