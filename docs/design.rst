@@ -328,6 +328,17 @@ nodes, these computationally-intensive ML processes can be done on x86
 processors running on AWS infrastructure rather than on edge nodes which may not
 even have a traditional processor.
 
+Improved Handling and Traceability
+----------------------------------
+
+Our project utilized DynamoDB to allow storage of arbitrary data associated with
+a certain measurement. This is great for flexibility, but causes some problems
+with tracking packages' movement through a warehouse as there is not really a
+direct trail. To add this direct trail, we could either convert to a relational
+database or use a hybrid approach where we have relational data for tracking the
+package through time, and non-relational data to store the individual data
+points.
+
 Remote Supervision of Edge Nodes
 --------------------------------
 
