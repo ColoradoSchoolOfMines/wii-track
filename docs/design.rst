@@ -58,7 +58,7 @@ Implementation`_ below).
    to store information about the items we processed.
 
 There can be any number of edge nodes and compute nodes, and DynamoDB could be
-replaced by any other non-relational database.
+replaced by any other database.
 
 The overall data flow is as follows::
 
