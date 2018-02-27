@@ -68,11 +68,11 @@ Here is a (non-comprehensive) list of considerations we discussed as we designed
 our system architecture:
 
 - **Edge nodes may not have much compute power.** For our prototype, we used a
-  Raspberry Pi 1 which only has a 600 MHz ARM processor. Starting up simple
-  Python GUI applications can take over 30 seconds! However, compared to many
-  embedded devices, the Raspberry Pi has a large amount of compute power. Many
-  embedded devices don't have the ability to ``malloc`` memory on the heap, so
-  simple operations like string manipulation are not feasible.
+  Raspberry Pi 1 which only has a 600 MHz ARM processor. Starting up the
+  Python 3 interpreter can take over 30 seconds! However, compared to many
+  embedded devices, the Raspberry Pi has a large amount of compute power.
+  Operations such as string manipulation and floating point arithmetic are
+  not possible on many embedded devices.
 
   This led us to push all of the computation onto AWS Lambda. Edge nodes only
   send raw data and we can then utilize the power of the Amazon infrastructure
