@@ -85,8 +85,8 @@ our system architecture:
   infrastructure.
 
 - |aws| One of the prizes at HackCU was for the application that best utilized
-  Amazon AWS. We wanted to enter the competition for this prize, and that was
-  part of the reason we used AWS Lambda and AWS DynamoDB. Our entry into this
+  AWS. We wanted to enter the competition for this prize, and that was part of
+  the reason we used AWS Lambda and AWS DynamoDB. Our entry into this
   competition, won.
 
 .. This is an ugly hack. I can't easily nest any role inside of a bold, so I'm
@@ -103,8 +103,9 @@ Hackathon Implementation
 ========================
 
 At HackCU, we implemented a proof of concept for this project. We built a
-prototype edge node, a prototype compute node, a prototype datastore, a client
-to view the data in the datastore, and a client to control the edge node.
+prototype edge node, a prototype compute node, a prototype datastore, a simple
+GUI client to view the data in the datastore, and a simple GUI to control the
+edge node.
 
 Edge Node
 ---------
@@ -121,7 +122,7 @@ Edge Node
 .. |wii| replace:: ``wiiboard.py``
 .. _wii: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/wiiboard.py
 
-.. TODO: Robby: fill these in.
+.. TODO: Robby: fill in the following paragraphs.
 
 We implemented our edge node with two sensors: a scale (the WiiFit board) and a
 camera (Raspberry Pi camera mounted on an Arduino-controled servo). The
@@ -135,7 +136,7 @@ pictures of the package. Our prototype required user interaction to take a
 picture, but ideally, we would trigger this picture when the package is put on
 the scale.
 
-.. TODO: Jack: fill in details of this here
+.. TODO: Jack: fill in details in the following paragraph
 
 The WiiFit board was connected over Bluetooth to one of our computers. We would
 have liked to make the Raspberry Pi communicate directly with the WiiFit board,
@@ -171,8 +172,8 @@ Color Processing Lambda
 
 The ``color-lambda`` function processed data from the camera. It used
 
-.. TODO describe libraries and method (whatever that crazy square rooting of
-   stuff was)
+.. TODO: David and Jack describe libraries and method (whatever that crazy
+   square rooting of stuff was)
 
 Weight Processing Lambda
 ~~~~~~~~~~~~~~~~~~~~~~~~
