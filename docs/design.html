@@ -800,7 +800,8 @@ distribution is not 1, so we had to multiply ba a factor (<span class="formula">
 convert it to a percentage.</p>
 <img alt="img/confidence-interval.png" src="img/confidence-interval.png" />
 </li>
-<li><p class="first">We store our confidences in each item in the DynamoDB database.</p>
+<li><p class="first">We store our confidences in each item in the DynamoDB database using the
+<tt class="docutils literal">boto3</tt> library by Amazon for manipulating AWS objects.</p>
 </li>
 </ol>
 </div>
@@ -819,7 +820,8 @@ predictions from the Lambda functions.</p>
 </div>
 <div class="section" id="industrial-scale-implementation">
 <h1>Industrial Scale Implementation</h1>
-<p>Our hackathon implementation cut a lot of corners.</p>
+<p>Our hackathon prototype cut a lot of corners, however we designed our project
+with scalability in mind.</p>
 </div>
 </div>
 </body>

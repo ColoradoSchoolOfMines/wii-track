@@ -195,7 +195,8 @@ to the weights already stored in a database table. The algorithm was as follows:
    convert it to a percentage.
 
    .. image:: img/confidence-interval.png
-4. We store our confidences in each item in the DynamoDB database.
+4. We store our confidences in each item in the DynamoDB database using the
+   ``boto3`` library by Amazon for manipulating AWS objects.
 
 Datastore
 ---------
@@ -215,4 +216,5 @@ predictions from the Lambda functions.
 Industrial Scale Implementation
 ===============================
 
-Our hackathon implementation cut a lot of corners.
+Our hackathon prototype cut a lot of corners, however we designed our project
+with scalability in mind.
