@@ -122,8 +122,8 @@ Edge Node
 
 .. note::
 
-    See the |a|_ and |r|_ directories and the |wii|_ file for the edge node source
-    code.
+    See the |a|_ and |r|_ directories and the |wii|_ file for the edge node
+    source code.
 
 .. |a| replace:: ``arduino``
 .. _a: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/arduino
