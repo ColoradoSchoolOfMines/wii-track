@@ -1,7 +1,7 @@
 Wii-Track
 #########
 
-In this document, we will give an overview of Wii-Track,describe its
+In this document, we will give an overview of Wii-Track, describe its
 overall system architecture and the reasons we chose the architecture,
 describe our hackathon implementation; and discuss how this project could be
 implemented at an industrial scale.
