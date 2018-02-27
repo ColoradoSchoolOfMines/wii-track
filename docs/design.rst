@@ -229,7 +229,7 @@ Client Application
 
 .. note::
 
-    See the |dt|_ directory has code related to creating the database schema,
+    See the |dt|_ directory for code related to creating the database schema,
     and some test data that we used during development.
 
 .. |dt| replace:: ``desktop``
