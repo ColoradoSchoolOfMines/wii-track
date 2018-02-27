@@ -649,6 +649,17 @@ describe our hackathon implementation; and d) discuss how this project could be
 implemented at an industrial scale.</p>
 <div class="section" id="overview">
 <h1>Overview</h1>
+<div class="sidebar">
+<p class="first sidebar-title">General Information</p>
+<p><strong>GitHub Repo:</strong> <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track">ColoradoSchoolOfMines/wii-track</a></p>
+<p><strong>Hackers:</strong></p>
+<ul class="last simple">
+<li><a class="reference external" href="https://github.com/sumnerevans">Sumner Evans</a></li>
+<li><a class="reference external" href="https://github.com/edwargix">David Florness</a></li>
+<li><a class="reference external" href="https://github.com/jhgarner">Jack Garner</a></li>
+<li><a class="reference external" href="https://github.com/robozman">Robby Zampino</a></li>
+</ul>
+</div>
 <p>Wii-Track is a system for package tracking designed for use in a variety of
 scenarios such as warehouses. The name Wii-Track comes from the fact that we
 used a WiiFit board as our &quot;scale&quot; for this prototype.</p>
@@ -657,6 +668,9 @@ sensors and data analytics to identify inventory items automatically, without
 human intervention. For the hackathon, we utilized two metrics (weight and
 color) to identify objects, however, we designed the system to scale to any
 number of additional metrics such as image recognition and infrared image data.</p>
+<p>Our project was inspired by the Dish challenge at the HackCU hackathon. Their
+challenge was to create a system for asset tracking which utilized IOT
+technologies.</p>
 </div>
 <div class="section" id="architecture">
 <h1>Architecture</h1>
@@ -674,7 +688,7 @@ moving around. For our prototype, we utilized the AWS DynamoDB NoSQL database
 to store information about the items we processed.</li>
 </ol>
 <p>There can be any number of edge nodes and compute nodes, and DynamoDB could be
-replaced by any other datastore.</p>
+replaced by any other non-relational database.</p>
 <p>The overall data flow is as follows:</p>
 <pre class="literal-block">
 Edge nodes -&gt; Compute nodes -&gt; Data store -&gt; User facing applications
@@ -697,14 +711,6 @@ installed in low-bandwidth areas and then possibly not replaced for years. If
 we want to add new features, it would be difficult if computation were done at
 the edge. By pushing all of the processing to Lambda, if we want to update how
 the data is processed, it is very easy to update the Lambda function.</p>
-<p>One tangible example of how this might be useful is that, in the future, we
-may find a way to use the weight data over time as a metric for determining
-the object using Machine Learning. If we only sent one data point to the
-Lambda function, we would have to update the edge nodes to handle this
-computationally-intensive ML. Whereas if all computation is done on Lambda,
-this is a relatively easy addition to our Lambda function.</p>
-<p>Additionally, to support a new type of edge node, all we need to do is create
-a new Lambda function.</p>
 </li>
 <li><p class="first"><strong>Server administration is hard.</strong> AWS Lambda abstracts the server away, so we
 are able to concentrate on code, not deployment. This was great for not only
@@ -721,20 +727,20 @@ infrastructure.</p>
 <li><p class="first"><strong>
 We wanted to, and did, win the <em>Best Use of AWS</em> challenge.
 </strong> One of the prizes at HackCU was for the application that best utilized
-Amazon AWS. We wanted to enter the competition for this prize, and that was
-part of the reason we used AWS Lambda and AWS DynamoDB. Our entry into this
+AWS. We wanted to enter the competition for this prize, and that was part of
+the reason we used AWS Lambda and AWS DynamoDB. Our entry into this
 competition, won.</p>
 </li>
 </ul>
 <!-- This is an ugly hack. I can't easily nest any role inside of a bold, so I'm
 doing raw HTML instead... -->
-<!-- TODO: Dish? -->
 </div>
 <div class="section" id="hackathon-implementation">
 <h1>Hackathon Implementation</h1>
 <p>At HackCU, we implemented a proof of concept for this project. We built a
-prototype edge node, a prototype compute node, a prototype datastore, a client
-to view the data in the datastore, and a client to control the edge node.</p>
+prototype edge node, a prototype compute node, a prototype datastore, a simple
+GUI client to view the data in the datastore, and a simple GUI to control the
+edge node.</p>
 <div class="section" id="edge-node">
 <h2>Edge Node</h2>
 <div class="admonition note">
@@ -742,7 +748,7 @@ to view the data in the datastore, and a client to control the edge node.</p>
 <p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/arduino"><tt class="docutils literal">arduino</tt></a> and <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/rpi"><tt class="docutils literal">rpi</tt></a> directories and the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/wiiboard.py"><tt class="docutils literal">wiiboard.py</tt></a> file for the edge node source
 code.</p>
 </div>
-<!-- TODO: Robby: fill these in. -->
+<!-- TODO: Robby: fill in the following paragraphs. -->
 <p>We implemented our edge node with two sensors: a scale (the WiiFit board) and a
 camera (Raspberry Pi camera mounted on an Arduino-controled servo). The
 Raspberry Pi was connected over TODO to the Arduino which controlled a servo
@@ -753,7 +759,7 @@ also showed a live image of the package. We also had the ability to take
 pictures of the package. Our prototype required user interaction to take a
 picture, but ideally, we would trigger this picture when the package is put on
 the scale.</p>
-<!-- TODO: Jack: fill in details of this here -->
+<!-- TODO: Jack: fill in details in the following paragraph -->
 <p>The WiiFit board was connected over Bluetooth to one of our computers. We would
 have liked to make the Raspberry Pi communicate directly with the WiiFit board,
 but this was infeasible since the Raspberry Pi does not have Bluetooth
@@ -775,8 +781,8 @@ different computers, we had to create two Lambda functions for our prototype.</p
 <div class="section" id="color-processing-lambda">
 <h3>Color Processing Lambda</h3>
 <p>The <tt class="docutils literal"><span class="pre">color-lambda</span></tt> function processed data from the camera. It used</p>
-<!-- TODO describe libraries and method (whatever that crazy square rooting of
-stuff was) -->
+<!-- TODO: David and Jack describe libraries and method (whatever that crazy
+square rooting of stuff was) -->
 </div>
 <div class="section" id="weight-processing-lambda">
 <h3>Weight Processing Lambda</h3>
@@ -810,18 +816,145 @@ convert it to a percentage.</p>
 <h2>Datastore</h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/dynamodb"><tt class="docutils literal">dynamodb</tt></a> directory has code related to creating the database schema,
-and some test data that we used during development.</p>
+<p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/dynamodb"><tt class="docutils literal">dynamodb</tt></a> directory for the code related to creating the database, and
+some test data that we used during development.</p>
 </div>
 <p>We used AWS DynamoDB as our datastore. We used this in two places: to store
 manually-computed inventory weight information, and to store the results of our
 predictions from the Lambda functions.</p>
 </div>
+<div class="section" id="client-application">
+<h2>Client Application</h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/desktop"><tt class="docutils literal">desktop</tt></a> directory has code related to creating the database schema,
+and some test data that we used during development.</p>
+</div>
+<p>We created a Qt application in Python to query data from the datastore and
+present it to the user.</p>
+</div>
 </div>
 <div class="section" id="industrial-scale-implementation">
 <h1>Industrial Scale Implementation</h1>
 <p>Our hackathon prototype cut a lot of corners, however we designed our project
-with scalability in mind.</p>
+with scalability in mind. We began by thinking big-picture, and talked about
+what a full scale implementation would look like.  We thought of a few scenarios
+where this project could be used such as intra-warehouse use and rural areas
+that currently have limited package tracking infrastructure. From these broad
+goals, we chose a set of features which we thought would be a good
+proof-of-concept and that is what we implemented during the hackathon.</p>
+<p>By starting with how this project may scale, we were able to make informed
+decisions about the architecture of our system. We have already discussed some
+of these scalability considerations in the context of how they affected our
+overall system's architecture in the <a class="reference internal" href="#architecture">Architecture</a> section above. Here we
+concentrate on some of the additional considerations and scenarios that arose
+when we thought about how we might deploy this project at scale in industrial
+environments, but which did not directly affect our system architecture choices.</p>
+<div class="section" id="additional-sensors">
+<h2>Additional Sensors</h2>
+<p>We had a very limited set of sensors to work with, and they were not even very
+accurate. In a production environment, we would want to use much higher quality
+sensors, and increase the number of sensors utilized.</p>
+<p>One example of such a sensor is a barcode scanner. We could add that to our node
+as a primary method for determining what an item is, and then use all of the
+other metrics to ensure that the item is in fact what the barcode says it is.
+The story that drove this was a warehouse scenario where these edge nodes are
+deployed in many places throughout the warehouse. If a non-trustworthy worker
+switched a barcode, or somehow the barcode just fell off in between two edge
+nodes, there would be a clear paper-trail to identify the problem.</p>
+<p>To support new sensors on a node, we would either create new Lambda functions,
+or update existing ones to handle the new data. Since we utilize a
+non-relational database, storing these additional metrics does not require any
+database changes.</p>
+</div>
+<div class="section" id="multiple-versions-of-edge-nodes">
+<h2>Multiple Versions of Edge Nodes</h2>
+<p>We envision edge node deployments to remain for years. However, newer versions
+of the edge nodes could be made in this time period. To handle these new
+versions of edge nodes, while maintaining backwards compatibility, we would just
+write new Lambda functions to handle the new nodes, and point the newer edge
+nodes to the update Lambda function.</p>
+</div>
+<div class="section" id="high-traffic-intensity">
+<h2>High Traffic Intensity</h2>
+<p>We want to be able to rapidly scale the computational power available depending
+on the number of packages which need to be processed. Such a high volume would
+be UPS warehouses during the holidays. In these scenarios, we would want the
+infrastructure to scale automatically to meet the increased demand while
+maintaining low latency.</p>
+<p>Our plan for this scenario is to put the AWS Lambda functions into auto-scaling
+groups so that we can utilize Amazon's infrastructure to scale the computational
+power rapidly.</p>
+</div>
+<div class="section" id="adding-additional-data-analysis-methods">
+<h2>Adding Additional Data Analysis Methods</h2>
+<p>In the future, we may find new ways to analyze the raw data to give better
+predictions about what item is being processed. To accommodate these new
+methods, we merely have to update the Lambda functions.</p>
+<p>A few examples of additional analysis methods include:</p>
+<ul>
+<li><p class="first"><strong>Weight distribution over time.</strong> An example may be a scenario where weight
+data over a time period may help determine what the object is, would be an
+item containing liquid. The liquid may slosh around while on the scale, and
+cause the weight distribution to change.</p>
+<p>This metric could potentially prevent someone from replacing one item with an
+item with the same-weight, but different contents.</p>
+</li>
+<li><p class="first"><strong>Image recognition.</strong> We currently identify the color to help identify the
+object, however, this metric is not very good. We could use neural networks to
+do complex image recognition to better identify the item being examined.</p>
+</li>
+</ul>
+<p>Implementation of both of these analytics methods could be aided by the use of
+perceptual hashes.</p>
+<p>Since all of the computational power is concentrated in the Lambda compute
+nodes, these computationally-intensive ML processes can be done on x86
+processors running on AWS infrastructure rather than on edge nodes which may not
+even have a traditional processor.</p>
+</div>
+<div class="section" id="remote-supervision-of-edge-nodes">
+<h2>Remote Supervision of Edge Nodes</h2>
+<p>The edge nodes will not always be able to perfectly identify the object in
+question. In these cases, a human may need to intervene. We could easily create
+a system that would allow a human to remotely view the camera feed, move the
+camera around, view the data gathered from the sensors and the confidences
+generated by the Lambda compute node computations, and view historical data
+about the item. The supervisor could then override the system, or even send out
+a person to the floor to examine and resole the problem. This would allow for a
+single supervisor to have a real-time picture of the state of the entire system,
+and could reduce personnel overhead.</p>
+</div>
+<div class="section" id="customer-facing-applications">
+<h2>Customer Facing Applications</h2>
+<p>Having images of objects as they move through and between warehouses can greatly
+improve the customer experience. Right now, for example, UPS gives tracking
+information about a package, but it is not very detailed. If Wii-Track were
+deployed throughout their warehouses, they could generate much more granular
+data, and also provide images of the package to the customers.</p>
+<p>We could implement web apps or native applications to present this data to
+customers.</p>
+</div>
+<div class="section" id="business-process-improvement">
+<h2>Business Process Improvement</h2>
+<p>By collecting all of this data, businesses who deploy Wii-Track will be able to
+identify and respond to problems in their warehouses, supply chains, personnel,
+etc. more easily. For example, if a lot of items get lost or damaged between
+node A and node B, there may be is a problem with the conveyor belt system which
+causes items to get caught between two of them, and sometimes fall off.
+Obviously this is not a good situation, but the source of the problem can be
+identified quickly by inspecting the data from the nodes. This will reduce the
+wasted time trying to find the problem.</p>
+<p>We could create applications which notify supervisors of problems, and then
+present the data to supervisors need to identify the problem.</p>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h1>Conclusion</h1>
+<p>Although Wii-Track is a prototype, its architecture is robust, and its
+businesses applications are numerous. Our hackathon prototype implementation
+provides a proof-of-concept for the idea and tested the viability of the system
+architecture. We believe that with continued improvement, Wii-Track can be
+turned into a viable product which can be deployed at scale.</p>
 </div>
 </div>
 </body>
