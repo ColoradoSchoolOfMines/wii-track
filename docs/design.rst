@@ -147,7 +147,7 @@ but this was infeasible since the Raspberry Pi does not have Bluetooth
 capabilities. We used the `wiiboard`_ library to communicate with the WiiFit. It
 provided us with a constant stream of data consisting of four data points. Each
 data point gave the weight measurement for one of the four quadrants on the
-board. We sent this data directly to AWS using the |requests|_ library.
+WiiFit board. We sent this data directly to AWS using the |requests|_ library.
 
 .. _wiiboard: https://github.com/pierriko/wiiboard
 .. |requests| replace:: ``requests``
@@ -255,7 +255,7 @@ environments, but which did not directly affect our system architecture choices.
 Additional Sensors
 ------------------
 
-We had a very limited set of sensors to work with, and they were not even very
+We had a very limited set of sensors to work with, and they were not very
 accurate. In a production environment, we would want to use much higher quality
 sensors, and increase the number of sensors utilized.
 
