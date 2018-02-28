@@ -130,19 +130,17 @@ Edge Node
 .. |wii| replace:: ``wiiboard.py``
 .. _wii: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/wiiboard.py
 
-.. TODO: Robby: fill in the following paragraphs.
-
 We implemented our edge node with two sensors: a scale (the WiiFit board) and a
 camera (Raspberry Pi camera mounted on an Arduino-controled servo). The
-Raspberry Pi was connected over TODO to the Arduino which controlled a servo
-over TODO. This servo swivelled the camera around. The camera was connected
-directly to the Raspberry Pi using TODO.
+Raspberry Pi was connected over serial to the Arduino which controlled a servo.
+This servo swivelled the camera around. The camera was connected directly to the
+Raspberry Pi.
 
-We built a client application in Qt using Python which controlled the servo, and
-also showed a live image of the package. We also had the ability to take
-pictures of the package. Our prototype required user interaction to take a
-picture, but ideally, we would trigger this picture when the package is put on
-the scale.
+We built a client application in Python using Qt which allowed control of the
+servo/camera angle and also showed a live image of the package. We also had the
+ability to take pictures of the package. Our prototype required user interaction
+to take a picture, but ideally, we would trigger this picture when the package
+is put on the scale.
 
 The WiiFit board was connected over Bluetooth to one of our computers. We would
 have liked to make the Raspberry Pi communicate directly with the WiiFit board,
