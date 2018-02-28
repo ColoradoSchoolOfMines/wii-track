@@ -111,9 +111,8 @@ Hackathon Implementation
 ========================
 
 At HackCU, we implemented a proof of concept for this project. We built a
-prototype edge node, a prototype compute node, a prototype datastore, a simple
-GUI client to view the data in the datastore, and a simple GUI to control the
-edge node.
+prototype edge node, compute node, datastore, a simple GUI client to view the
+data in the datastore, and a simple GUI to control the edge node.
 
 Edge Node
 ---------
