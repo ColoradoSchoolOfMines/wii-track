@@ -196,11 +196,11 @@ to the weights already stored in a database table. The algorithm was as follows:
    inventory items within 4kg of the measurement. (We could be much more
    intelligent about this measurement, but for the hackathon, we just hardcoded
    it.)
-3. Calculate a confidence that the item on the scale is indeed that object.  We
+3. Calculate a confidence that the item on the scale is indeed that object. We
    used a very simple metric for this: the value of the PMF of a normal
    distribution centered around the expected weight, :math:`x` from the database
-   with a standard deviation :math:`d` also stored in the database. The hight of
-   a normal distribution is not 1, so we had to multiply ba a factor
+   with a standard deviation :math:`d` also stored in the database. The height
+   of a normal distribution is not 1, so we had to multiply ba a factor
    (:math:`1/k`) to convert it to a percentage.
 
    .. image:: img/confidence-interval.png
