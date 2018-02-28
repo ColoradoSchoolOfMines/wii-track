@@ -31,10 +31,10 @@ scenarios such as warehouses. The name Wii-Track comes from the fact that we
 used a WiiFit board as our "scale" for this prototype.
 
 Our overall goal was to make inventory tracking more cost-effective by utilizing
-sensors and data analytics to identify inventory items automatically, without
-human intervention. For the hackathon, we utilized two metrics (weight and
-color) to identify objects, however, we designed the system to scale to any
-number of additional metrics such as image recognition and infrared image data.
+sensors and data analytics to identify inventory items automatically. For the
+hackathon, we utilized two metrics (weight and color) to identify objects,
+however, we designed the system to scale to any number of additional metrics
+such as image recognition and infrared image data.
 
 Our project was inspired by the Dish challenge at the HackCU hackathon. Their
 challenge was to create a system for asset tracking which utilized IOT
