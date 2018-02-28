@@ -643,10 +643,9 @@ span.boxed, span.framebox {
 <div class="document" id="wii-track">
 <h1 class="title">Wii-Track</h1>
 
-<p>In this document, we will a) give an overview of Wii-Track; b) describe its
-overall system architecture and the reasons we chose the architecture; c)
-describe our hackathon implementation; and d) discuss how this project could be
-implemented at an industrial scale.</p>
+<p>In this document, we will give an overview of Wii-Track, describe its overall
+system architecture, explain our hackathon implementation, and discuss how this
+project could be implemented at an industrial scale.</p>
 <div class="section" id="overview">
 <h1>Overview</h1>
 <div class="sidebar">
@@ -688,7 +687,7 @@ moving around. For our prototype, we utilized the AWS DynamoDB NoSQL database
 to store information about the items we processed.</li>
 </ol>
 <p>There can be any number of edge nodes and compute nodes, and DynamoDB could be
-replaced by any other non-relational database.</p>
+replaced by any other database.</p>
 <p>The overall data flow is as follows:</p>
 <pre class="literal-block">
 Edge nodes -&gt; Compute nodes -&gt; Data store -&gt; User facing applications
@@ -697,20 +696,20 @@ Edge nodes -&gt; Compute nodes -&gt; Data store -&gt; User facing applications
 our system architecture:</p>
 <ul>
 <li><p class="first"><strong>Edge nodes may not have much compute power.</strong> For our prototype, we used a
-Raspberry Pi 1 which only has a 600 MHz ARM processor. Starting up simple
-Python GUI applications can take over 30 seconds! However, compared to many
-embedded devices, the Raspberry Pi has a large amount of compute power. Many
-embedded devices don't have the ability to <tt class="docutils literal">malloc</tt> memory on the heap, so
-simple operations like string manipulation are not feasible.</p>
+Raspberry Pi 1 which only has a 600 MHz ARM processor. Starting up the Python
+3 interpreter can take over 30 seconds! However, compared to many embedded
+devices, the Raspberry Pi has a large amount of compute power.  Operations
+such as string manipulation and floating point arithmetic are not possible on
+many embedded devices.</p>
 <p>This led us to push all of the computation onto AWS Lambda. Edge nodes only
 send raw data and we can then utilize the power of the Amazon infrastructure
 for data processing.</p>
 </li>
 <li><p class="first"><strong>Edge nodes may be difficult to update.</strong> These embedded devices may be
-installed in low-bandwidth areas and then possibly not replaced for years. If
-we want to add new features, it would be difficult if computation were done at
-the edge. By pushing all of the processing to Lambda, if we want to update how
-the data is processed, it is very easy to update the Lambda function.</p>
+installed in low-bandwidth areas and then possibly not replaced for years. It
+would be very difficult to add new features if those features required
+deploying an update to the edge nodes. Instead, we do almost all computation
+in lambda where publishing updates is easy.</p>
 </li>
 <li><p class="first"><strong>Server administration is hard.</strong> AWS Lambda abstracts the server away, so we
 are able to concentrate on code, not deployment. This was great for not only
@@ -727,9 +726,8 @@ infrastructure.</p>
 <li><p class="first"><strong>
 We wanted to, and did, win the <em>Best Use of AWS</em> challenge.
 </strong> One of the prizes at HackCU was for the application that best utilized
-AWS. We wanted to enter the competition for this prize, and that was part of
-the reason we used AWS Lambda and AWS DynamoDB. Our entry into this
-competition, won.</p>
+AWS. This was part of the reason why we used AWS Lambda and AWS DynamoDB. Our
+entry into this challenge won.</p>
 </li>
 </ul>
 <!-- This is an ugly hack. I can't easily nest any role inside of a bold, so I'm
@@ -745,8 +743,8 @@ edge node.</p>
 <h2>Edge Node</h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/arduino"><tt class="docutils literal">arduino</tt></a> and <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/rpi"><tt class="docutils literal">rpi</tt></a> directories and the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/wiiboard.py"><tt class="docutils literal">wiiboard.py</tt></a> file for the edge node source
-code.</p>
+<p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/arduino"><tt class="docutils literal">arduino</tt></a> and <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/rpi"><tt class="docutils literal">rpi</tt></a> directories and the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/wiiboard.py"><tt class="docutils literal">wiiboard.py</tt></a> file for the edge node
+source code.</p>
 </div>
 <!-- TODO: Robby: fill in the following paragraphs. -->
 <p>We implemented our edge node with two sensors: a scale (the WiiFit board) and a
@@ -759,14 +757,13 @@ also showed a live image of the package. We also had the ability to take
 pictures of the package. Our prototype required user interaction to take a
 picture, but ideally, we would trigger this picture when the package is put on
 the scale.</p>
-<!-- TODO: Jack: fill in details in the following paragraph -->
 <p>The WiiFit board was connected over Bluetooth to one of our computers. We would
 have liked to make the Raspberry Pi communicate directly with the WiiFit board,
 but this was infeasible since the Raspberry Pi does not have Bluetooth
-capabilities. We used the <a class="reference external" href="urltotheoriginalsourcecode">TODO</a> library to communicate with the WiiFit. It
-provided us with a constant stream of four data points: one weight measurement
-for each of the four quadrants of the board. We sent this data directly to AWS
-using the <a class="reference external" href="http://docs.python-requests.org/en/master/"><tt class="docutils literal">requests</tt></a> library.</p>
+capabilities. We used the <a class="reference external" href="https://github.com/pierriko/wiiboard">wiiboard</a> library to communicate with the WiiFit. It
+provided us with a constant stream of data consisting of four data points. Each
+data point gave the weight measurement for one of the four quadrants on the
+board. We sent this data directly to AWS using the <a class="reference external" href="http://docs.python-requests.org/en/master/"><tt class="docutils literal">requests</tt></a> library.</p>
 </div>
 <div class="section" id="compute-node">
 <h2>Compute Node</h2>
@@ -780,9 +777,11 @@ single Lambda function. However, because the edge node was implemented on two
 different computers, we had to create two Lambda functions for our prototype.</p>
 <div class="section" id="color-processing-lambda">
 <h3>Color Processing Lambda</h3>
-<p>The <tt class="docutils literal"><span class="pre">color-lambda</span></tt> function processed data from the camera. It used</p>
-<!-- TODO: David and Jack describe libraries and method (whatever that crazy
-square rooting of stuff was) -->
+<p>The <tt class="docutils literal"><span class="pre">color-lambda</span></tt> function processed data from the camera. It used <a class="reference external" href="https://github.com/python-pillow/Pillow">Pillow</a>
+to process the image and the root-mean-square formula to find the dominant
+color. Since we were filtering out a white background, this formula was better
+than the average because it compensates for any white in the object that was
+accidentally filtered out.</p>
 </div>
 <div class="section" id="weight-processing-lambda">
 <h3>Weight Processing Lambda</h3>
@@ -792,21 +791,20 @@ to the weights already stored in a database table. The algorithm was as follows:
 <li><p class="first">Take all of the weight data that is being sent from the WiiFit and calculate
 the average weight.</p>
 </li>
-<li><p class="first">We query a database pre-seeded with information about inventory items to get
-all inventory items within 4kg of the measurement. (We could be much more
+<li><p class="first">Query a database pre-seeded with information about inventory items to get all
+inventory items within 4kg of the measurement. (We could be much more
 intelligent about this measurement, but for the hackathon, we just hardcoded
 it.)</p>
 </li>
-<li><p class="first">For each of the items returned from the query, we calculated a confidence
-that the item on the scale is indeed that object. We used a very simple
-metric for this: the value of the PMF of a normal distribution centered
-around the expected weight, <span class="formula"><i>x</i></span> from the database with a standard
-deviation <span class="formula"><i>d</i></span> also stored in the database. The hight of a normal
-distribution is not 1, so we had to multiply ba a factor (<span class="formula">1 ⁄ <i>k</i></span>) to
-convert it to a percentage.</p>
+<li><p class="first">Calculate a confidence that the item on the scale is indeed that object.  We
+used a very simple metric for this: the value of the PMF of a normal
+distribution centered around the expected weight, <span class="formula"><i>x</i></span> from the database
+with a standard deviation <span class="formula"><i>d</i></span> also stored in the database. The hight of
+a normal distribution is not 1, so we had to multiply ba a factor
+(<span class="formula">1 ⁄ <i>k</i></span>) to convert it to a percentage.</p>
 <img alt="img/confidence-interval.png" src="img/confidence-interval.png" />
 </li>
-<li><p class="first">We store our confidences in each item in the DynamoDB database using the
+<li><p class="first">Store the confidences of each item in the DynamoDB database using the
 <tt class="docutils literal">boto3</tt> library by Amazon for manipulating AWS objects.</p>
 </li>
 </ol>
@@ -827,7 +825,7 @@ predictions from the Lambda functions.</p>
 <h2>Client Application</h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/desktop"><tt class="docutils literal">desktop</tt></a> directory has code related to creating the database schema,
+<p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/desktop"><tt class="docutils literal">desktop</tt></a> directory for code related to creating the database schema,
 and some test data that we used during development.</p>
 </div>
 <p>We created a Qt application in Python to query data from the datastore and
@@ -912,6 +910,16 @@ nodes, these computationally-intensive ML processes can be done on x86
 processors running on AWS infrastructure rather than on edge nodes which may not
 even have a traditional processor.</p>
 </div>
+<div class="section" id="improved-handling-and-traceability">
+<h2>Improved Handling and Traceability</h2>
+<p>Our project utilized DynamoDB to allow storage of arbitrary data associated with
+a certain measurement. This is great for flexibility, but causes some problems
+with tracking packages' movement through a warehouse as there is not really a
+direct trail. To add this direct trail, we could either convert to a relational
+database or use a hybrid approach where we have relational data for tracking the
+package through time, and non-relational data to store the individual data
+points.</p>
+</div>
 <div class="section" id="remote-supervision-of-edge-nodes">
 <h2>Remote Supervision of Edge Nodes</h2>
 <p>The edge nodes will not always be able to perfectly identify the object in
@@ -945,7 +953,7 @@ Obviously this is not a good situation, but the source of the problem can be
 identified quickly by inspecting the data from the nodes. This will reduce the
 wasted time trying to find the problem.</p>
 <p>We could create applications which notify supervisors of problems, and then
-present the data to supervisors need to identify the problem.</p>
+present the data that supervisors need to identify the problem.</p>
 </div>
 </div>
 <div class="section" id="conclusion">

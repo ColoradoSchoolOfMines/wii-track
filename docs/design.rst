@@ -1,10 +1,9 @@
 Wii-Track
 #########
 
-In this document, we will give an overview of Wii-Track, describe its
-overall system architecture and the reasons we chose the architecture,
-describe our hackathon implementation; and discuss how this project could be
-implemented at an industrial scale.
+In this document, we will give an overview of Wii-Track, describe its overall
+system architecture, explain our hackathon implementation, and discuss how this
+project could be implemented at an industrial scale.
 
 Overview
 ========
@@ -28,7 +27,7 @@ Overview
 __ https://github.com/ColoradoSchoolOfMines/wii-track
 
 Wii-Track is a system for package tracking designed for use in a variety of
-scenarios such as organizing warehouses. The name Wii-Track comes from the fact that we
+scenarios such as warehouses. The name Wii-Track comes from the fact that we
 used a WiiFit board as our "scale" for this prototype.
 
 Our overall goal was to make inventory tracking more cost-effective by utilizing
@@ -45,7 +44,7 @@ Architecture
 ============
 
 At a high level, the Wii-Track architecture has three components: edge nodes,
-compute nodes, and a data nodes. User-facing applications can be built on top of
+compute nodes, and a data store. User-facing applications can be built on top of
 this framework (see `Hackathon Implementation`_ and `Industrial Scale
 Implementation`_ below).
 
@@ -53,7 +52,7 @@ Implementation`_ below).
    to the compute nodes for processing.
 2. **Compute nodes:** these nodes process raw data using a variety of analytics.
    In our case, these nodes were AWS Lambda functions.
-3. **data nodes:** this stores information about the inventory and how it is
+3. **Data store:** this stores information about the inventory and how it is
    moving around. For our prototype, we utilized the AWS DynamoDB NoSQL database
    to store information about the items we processed.
 
@@ -62,27 +61,27 @@ replaced by any other database.
 
 The overall data flow is as follows::
 
-    Edge nodes -> Compute nodes -> data nodes -> User facing applications
+    Edge nodes -> Compute nodes -> Data store -> User facing applications
 
 Here is a (non-comprehensive) list of considerations we discussed as we designed
 our system architecture:
 
 - **Edge nodes may not have much compute power.** For our prototype, we used a
-  Raspberry Pi 1 which only has a 600 MHz ARM processor. Starting up the
-  Python 3 interpreter can take over 30 seconds! However, compared to many
-  embedded devices, the Raspberry Pi has a large amount of compute power.
-  Operations such as string manipulation and floating point arithmetic are
-  not possible on many embedded devices.
+  Raspberry Pi 1 which only has a 600 MHz ARM processor. Starting up the Python
+  3 interpreter can take over 30 seconds! However, compared to many embedded
+  devices, the Raspberry Pi has a large amount of compute power.  Operations
+  such as string manipulation and floating point arithmetic are not possible on
+  many embedded devices.
 
   This led us to push all of the computation onto AWS Lambda. Edge nodes only
   send raw data and we can then utilize the power of the Amazon infrastructure
   for data processing.
 
 - **Edge nodes may be difficult to update.** These embedded devices may be
-  installed in low-bandwidth areas and then possibly not replaced for years.
-  It would be very difficult to add new features if those features required
-  deploying an update to the edge nodes. Instead, we do almost all computation in
-  lambda where pushing updates is easy.
+  installed in low-bandwidth areas and then possibly not replaced for years. It
+  would be very difficult to add new features if those features required
+  deploying an update to the edge nodes. Instead, we do almost all computation
+  in lambda where publishing updates is easy.
 
 - **Server administration is hard.** AWS Lambda abstracts the server away, so we
   are able to concentrate on code, not deployment. This was great for not only
@@ -145,14 +144,12 @@ pictures of the package. Our prototype required user interaction to take a
 picture, but ideally, we would trigger this picture when the package is put on
 the scale.
 
-.. TODO: Jack: fill in details in the following paragraph
-
 The WiiFit board was connected over Bluetooth to one of our computers. We would
 have liked to make the Raspberry Pi communicate directly with the WiiFit board,
 but this was infeasible since the Raspberry Pi does not have Bluetooth
 capabilities. We used the `wiiboard`_ library to communicate with the WiiFit. It
-provided us with a constant stream of data consisting of four data points. 
-Each data point gave the weight measurement for one of the four quadrants on the 
+provided us with a constant stream of data consisting of four data points. Each
+data point gave the weight measurement for one of the four quadrants on the
 board. We sent this data directly to AWS using the |requests|_ library.
 
 .. _wiiboard: https://github.com/pierriko/wiiboard
@@ -180,15 +177,12 @@ Color Processing Lambda
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``color-lambda`` function processed data from the camera. It used `Pillow`_
-to process the image and the root-mean-square formula to find the dominant color.
-Since we were filtering out a white background, this formula was better than the
-average because it compenstates for any white in the object that was accidentally
-filtered out.
+to process the image and the root-mean-square formula to find the dominant
+color. Since we were filtering out a white background, this formula was better
+than the average because it compensates for any white in the object that was
+accidentally filtered out.
 
 .. _Pillow: https://github.com/python-pillow/Pillow
-
-.. TODO: David and Jack describe libraries and method (whatever that crazy
-   square rooting of stuff was)
 
 Weight Processing Lambda
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -198,16 +192,16 @@ to the weights already stored in a database table. The algorithm was as follows:
 
 1. Take all of the weight data that is being sent from the WiiFit and calculate
    the average weight.
-2. Query a database pre-seeded with information about inventory items to get
-   all inventory items within 4kg of the measurement. (We could be much more
+2. Query a database pre-seeded with information about inventory items to get all
+   inventory items within 4kg of the measurement. (We could be much more
    intelligent about this measurement, but for the hackathon, we just hardcoded
    it.)
-3. Calculate a confidence that the item on the scale is indeed that object. 
-   We used a very simple metric for this: the value of the PMF of a normal 
-   distribution centered around the expected weight, :math:`x` from the database 
-   with a standard deviation :math:`d` also stored in the database. The hight of 
-   a normal distribution is not 1, so we had to multiply ba a factor (:math:`1/k`)
-   to convert it to a percentage.
+3. Calculate a confidence that the item on the scale is indeed that object.  We
+   used a very simple metric for this: the value of the PMF of a normal
+   distribution centered around the expected weight, :math:`x` from the database
+   with a standard deviation :math:`d` also stored in the database. The hight of
+   a normal distribution is not 1, so we had to multiply ba a factor
+   (:math:`1/k`) to convert it to a percentage.
 
    .. image:: img/confidence-interval.png
 4. Store the confidences of each item in the DynamoDB database using the
