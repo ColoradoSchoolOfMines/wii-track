@@ -746,17 +746,16 @@ edge node.</p>
 <p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/arduino"><tt class="docutils literal">arduino</tt></a> and <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/rpi"><tt class="docutils literal">rpi</tt></a> directories and the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/wiiboard.py"><tt class="docutils literal">wiiboard.py</tt></a> file for the edge node
 source code.</p>
 </div>
-<!-- TODO: Robby: fill in the following paragraphs. -->
 <p>We implemented our edge node with two sensors: a scale (the WiiFit board) and a
 camera (Raspberry Pi camera mounted on an Arduino-controled servo). The
-Raspberry Pi was connected over TODO to the Arduino which controlled a servo
-over TODO. This servo swivelled the camera around. The camera was connected
-directly to the Raspberry Pi using TODO.</p>
-<p>We built a client application in Qt using Python which controlled the servo, and
-also showed a live image of the package. We also had the ability to take
-pictures of the package. Our prototype required user interaction to take a
-picture, but ideally, we would trigger this picture when the package is put on
-the scale.</p>
+Raspberry Pi was connected over serial to the Arduino which controlled a servo.
+This servo swivelled the camera around. The camera was connected directly to the
+Raspberry Pi.</p>
+<p>We built a client application in Python using Qt which allowed control of the
+servo/camera angle and also showed a live image of the package. We also had the
+ability to take pictures of the package. Our prototype required user interaction
+to take a picture, but ideally, we would trigger this picture when the package
+is put on the scale.</p>
 <p>The WiiFit board was connected over Bluetooth to one of our computers. We would
 have liked to make the Raspberry Pi communicate directly with the WiiFit board,
 but this was infeasible since the Raspberry Pi does not have Bluetooth
@@ -796,11 +795,11 @@ inventory items within 4kg of the measurement. (We could be much more
 intelligent about this measurement, but for the hackathon, we just hardcoded
 it.)</p>
 </li>
-<li><p class="first">Calculate a confidence that the item on the scale is indeed that object.  We
+<li><p class="first">Calculate a confidence that the item on the scale is indeed that object. We
 used a very simple metric for this: the value of the PMF of a normal
 distribution centered around the expected weight, <span class="formula"><i>x</i></span> from the database
-with a standard deviation <span class="formula"><i>d</i></span> also stored in the database. The hight of
-a normal distribution is not 1, so we had to multiply ba a factor
+with a standard deviation <span class="formula"><i>d</i></span> also stored in the database. The height
+of a normal distribution is not 1, so we had to multiply ba a factor
 (<span class="formula">1 ⁄ <i>k</i></span>) to convert it to a percentage.</p>
 <img alt="img/confidence-interval.png" src="img/confidence-interval.png" />
 </li>
