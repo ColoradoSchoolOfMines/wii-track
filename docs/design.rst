@@ -215,9 +215,9 @@ Datastore
 .. |db| replace:: ``dynamodb``
 .. _db: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/dynamodb
 
-We used AWS DynamoDB as our datastore. We used this in two places: to store
-manually-computed inventory weight information, and to store the results of our
-predictions from the Lambda functions.
+We used AWS DynamoDB as our datastore. We used it to store manually-computed
+inventory weight information, calculated RGB color values, and the results of
+our predictions from the Lambda functions.
 
 Client Application
 ------------------
