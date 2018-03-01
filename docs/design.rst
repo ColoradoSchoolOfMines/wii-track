@@ -367,7 +367,7 @@ Business Process Improvement
 By collecting all of this data, businesses who deploy Wii-Track will be able to
 identify and respond to problems in their warehouses, supply chains, personnel,
 etc. more easily. For example, if a lot of items get lost or damaged between
-node A and node B, there may be is a problem with the conveyor belt system which
+node A and node B, there may be a problem with the conveyor belt system which
 causes items to get caught between two of them, and sometimes fall off.
 Obviously this is not a good situation, but the source of the problem can be
 identified quickly by inspecting the data from the nodes. This will reduce the
