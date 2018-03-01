@@ -111,9 +111,8 @@ Hackathon Implementation
 ========================
 
 At HackCU, we implemented a proof of concept for this project. We built a
-prototype edge node, a prototype compute node, a prototype datastore, a simple
-GUI client to view the data in the datastore, and a simple GUI to control the
-edge node.
+prototype edge node, compute node, datastore, a simple GUI client to view the
+data in the datastore, and a simple GUI to control the edge node.
 
 Edge Node
 ---------
@@ -148,7 +147,7 @@ but this was infeasible since the Raspberry Pi does not have Bluetooth
 capabilities. We used the `wiiboard`_ library to communicate with the WiiFit. It
 provided us with a constant stream of data consisting of four data points. Each
 data point gave the weight measurement for one of the four quadrants on the
-board. We sent this data directly to AWS using the |requests|_ library.
+WiiFit board. We sent this data directly to AWS using the |requests|_ library.
 
 .. _wiiboard: https://github.com/pierriko/wiiboard
 .. |requests| replace:: ``requests``
@@ -216,9 +215,9 @@ Datastore
 .. |db| replace:: ``dynamodb``
 .. _db: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/dynamodb
 
-We used AWS DynamoDB as our datastore. We used this in two places: to store
-manually-computed inventory weight information, and to store the results of our
-predictions from the Lambda functions.
+We used AWS DynamoDB as our datastore. We used it to store manually-computed
+inventory weight information, calculated RGB color values, and the results of
+our predictions from the Lambda functions.
 
 Client Application
 ------------------
@@ -256,7 +255,7 @@ environments, but which did not directly affect our system architecture choices.
 Additional Sensors
 ------------------
 
-We had a very limited set of sensors to work with, and they were not even very
+We had a very limited set of sensors to work with, and they were not very
 accurate. In a production environment, we would want to use much higher quality
 sensors, and increase the number of sensors utilized.
 
