@@ -76,13 +76,13 @@ our system architecture:
   many embedded devices.
 
   This led us to push all of the computation onto AWS Lambda. Edge nodes only
-  send raw data and we can then utilize the power of the Amazon infrastructure
+  send raw data, and we can then utilize the power of the Amazon infrastructure
   for data processing.
 
 - **Edge nodes may be difficult to update.** These edge nodes may be installed
   in low-bandwidth areas and then possibly not replaced for years. It would be
   very difficult to add new features if those features required deploying an
-  update to the edge nodes. Instead, we do almost all computation in lambda
+  update to the edge nodes. Instead, we do almost all computation in Lambda
   where publishing updates is easy.
 
 - **Server administration is hard.** AWS Lambda abstracts the server away, so we
@@ -91,11 +91,11 @@ our system architecture:
 
 - **The data stored will not be uniform.** If we have many different versions of
   edge nodes, the data sent and stored may not be the same across versions. For
-  example, one version may send image data, while other nodes only have infrared
-  data. Additionally, the data is not highly relational; relations between data
-  are derived at an application layer. This variance in data that we need to
-  store led us to use AWS DynamoDB, a scalable, NoSQL database running on Amazon
-  infrastructure.
+  example, one version may send image data, while other versions only have
+  infrared data. Additionally, the data is not highly relational; relations
+  between data are derived at an application layer. This variance in data that
+  we need to store led us to use AWS DynamoDB, a scalable, NoSQL database
+  running on Amazon infrastructure.
 
 - |aws| One of the prizes at HackCU was for the application that best utilized
   AWS. This was part of the reason why we used AWS Lambda and AWS DynamoDB. Our
@@ -161,7 +161,7 @@ Compute Node
 
 .. note::
 
-    See the |c|_ and |w|_ directories for the lambda function source code.
+    See the |c|_ and |w|_ directories for the Lambda function source code.
 
 .. |c| replace:: ``color-lambda``
 .. _c: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/color-lambda
@@ -227,8 +227,7 @@ Client Application
 
 .. note::
 
-    See the |dt|_ directory for code related to creating the database schema,
-    and some test data that we used during development.
+    See the |dt|_ directory for the source code of the client application.
 
 .. |dt| replace:: ``desktop``
 .. _dt: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/desktop
@@ -290,10 +289,10 @@ High Traffic Intensity
 ----------------------
 
 We want to be able to rapidly scale the computational power available depending
-on the number of packages which need to be processed. Such a high volume would
-be UPS warehouses during the holidays. In these scenarios, we would want the
-infrastructure to scale automatically to meet the increased demand while
-maintaining low latency.
+on the number of packages which need to be processed. An example of when such a
+high volume might occur would be UPS warehouses during the holidays. In these
+scenarios, we would want the infrastructure to scale automatically to meet the
+increased demand while maintaining low latency.
 
 Our plan for this scenario is to put the AWS Lambda functions into auto-scaling
 groups so that we can utilize Amazon's infrastructure to scale the computational

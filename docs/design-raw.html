@@ -700,13 +700,13 @@ devices, the Raspberry Pi has a large amount of compute power.  Operations
 such as string manipulation and floating point arithmetic are not possible on
 many embedded devices.</p>
 <p>This led us to push all of the computation onto AWS Lambda. Edge nodes only
-send raw data and we can then utilize the power of the Amazon infrastructure
+send raw data, and we can then utilize the power of the Amazon infrastructure
 for data processing.</p>
 </li>
 <li><p class="first"><strong>Edge nodes may be difficult to update.</strong> These edge nodes may be installed
 in low-bandwidth areas and then possibly not replaced for years. It would be
 very difficult to add new features if those features required deploying an
-update to the edge nodes. Instead, we do almost all computation in lambda
+update to the edge nodes. Instead, we do almost all computation in Lambda
 where publishing updates is easy.</p>
 </li>
 <li><p class="first"><strong>Server administration is hard.</strong> AWS Lambda abstracts the server away, so we
@@ -715,11 +715,11 @@ the HackCU hackathon, but also for scalability in the long term.</p>
 </li>
 <li><p class="first"><strong>The data stored will not be uniform.</strong> If we have many different versions of
 edge nodes, the data sent and stored may not be the same across versions. For
-example, one version may send image data, while other nodes only have infrared
-data. Additionally, the data is not highly relational; relations between data
-are derived at an application layer. This variance in data that we need to
-store led us to use AWS DynamoDB, a scalable, NoSQL database running on Amazon
-infrastructure.</p>
+example, one version may send image data, while other versions only have
+infrared data. Additionally, the data is not highly relational; relations
+between data are derived at an application layer. This variance in data that
+we need to store led us to use AWS DynamoDB, a scalable, NoSQL database
+running on Amazon infrastructure.</p>
 </li>
 <li><p class="first"><strong>
 We wanted to, and did, win the <em>Best Use of AWS</em> challenge.
@@ -765,7 +765,7 @@ WiiFit board. We sent this data directly to AWS using the <a class="reference ex
 <h2>Compute Node</h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/color-lambda"><tt class="docutils literal"><span class="pre">color-lambda</span></tt></a> and <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/weight-processing-lambda"><tt class="docutils literal"><span class="pre">weight-processing-lambda</span></tt></a> directories for the lambda function source code.</p>
+<p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/color-lambda"><tt class="docutils literal"><span class="pre">color-lambda</span></tt></a> and <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/weight-processing-lambda"><tt class="docutils literal"><span class="pre">weight-processing-lambda</span></tt></a> directories for the Lambda function source code.</p>
 </div>
 <p>We created two Lambda functions to process the data from the edge node. If both
 the scale and camera were controlled by a single Raspberry Pi, we could have
@@ -821,8 +821,7 @@ our predictions from the Lambda functions.</p>
 <h2>Client Application</h2>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/desktop"><tt class="docutils literal">desktop</tt></a> directory for code related to creating the database schema,
-and some test data that we used during development.</p>
+<p class="last">See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/desktop"><tt class="docutils literal">desktop</tt></a> directory for the source code of the client application.</p>
 </div>
 <p>We created a Qt application in Python to query data from the datastore and
 present it to the user. It showed the image of the package, as well as the
@@ -874,10 +873,10 @@ nodes to the new Lambda function.</p>
 <div class="section" id="high-traffic-intensity">
 <h2>High Traffic Intensity</h2>
 <p>We want to be able to rapidly scale the computational power available depending
-on the number of packages which need to be processed. Such a high volume would
-be UPS warehouses during the holidays. In these scenarios, we would want the
-infrastructure to scale automatically to meet the increased demand while
-maintaining low latency.</p>
+on the number of packages which need to be processed. An example of when such a
+high volume might occur would be UPS warehouses during the holidays. In these
+scenarios, we would want the infrastructure to scale automatically to meet the
+increased demand while maintaining low latency.</p>
 <p>Our plan for this scenario is to put the AWS Lambda functions into auto-scaling
 groups so that we can utilize Amazon's infrastructure to scale the computational
 power rapidly.</p>
