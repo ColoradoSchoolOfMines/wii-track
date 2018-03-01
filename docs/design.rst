@@ -199,7 +199,7 @@ to the weights already stored in a database table. The algorithm was as follows:
 3. Calculate a confidence that the item on the scale is indeed that object. We
    used a very simple metric for this: the value of the PMF of a normal
    distribution centered around the expected weight from the database,
-   :math:`x`, and a standard deviation :math:`d` also stored in the database.
+   :math:`x`, and a standard deviation, :math:`d`, also stored in the database.
    The height of a normal distribution is not 1, so we had to multiply by a
    factor (:math:`1/k`) to convert it to a percentage.
 
