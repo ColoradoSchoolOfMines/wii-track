@@ -28,7 +28,7 @@ __ https://github.com/ColoradoSchoolOfMines/wii-track
 
 Wii-Track is a system for package tracking designed for use in a variety of
 scenarios such as warehouses. The name Wii-Track comes from the fact that we
-used a WiiFit board as our "scale" for this prototype.
+used a WiiFit board as our scale for this prototype.
 
 Our overall goal was to make inventory tracking more cost-effective by utilizing
 sensors and data analytics to identify inventory items automatically, without
@@ -77,11 +77,11 @@ our system architecture:
   send raw data and we can then utilize the power of the Amazon infrastructure
   for data processing.
 
-- **Edge nodes may be difficult to update.** These embedded devices may be
-  installed in low-bandwidth areas and then possibly not replaced for years. It
-  would be very difficult to add new features if those features required
-  deploying an update to the edge nodes. Instead, we do almost all computation
-  in lambda where publishing updates is easy.
+- **Edge nodes may be difficult to update.** These edge nodes may be installed
+  in low-bandwidth areas and then possibly not replaced for years. It would be
+  very difficult to add new features if those features required deploying an
+  update to the edge nodes. Instead, we do almost all computation in lambda
+  where publishing updates is easy.
 
 - **Server administration is hard.** AWS Lambda abstracts the server away, so we
   are able to concentrate on code, not deployment. This was great for not only
@@ -145,11 +145,12 @@ is put on the scale.
 The WiiFit board was connected over Bluetooth to one of our computers. We would
 have liked to make the Raspberry Pi communicate directly with the WiiFit board,
 but this was infeasible since the Raspberry Pi does not have Bluetooth
-capabilities. We used the `wiiboard`_ library to communicate with the WiiFit. It
+capabilities. We used the |wiiboard|_ library to communicate with the WiiFit. It
 provided us with a constant stream of data consisting of four data points. Each
 data point gave the weight measurement for one of the four quadrants on the
 board. We sent this data directly to AWS using the |requests|_ library.
 
+.. |wiiboard| replace:: ``wiiboard``
 .. _wiiboard: https://github.com/pierriko/wiiboard
 .. |requests| replace:: ``requests``
 .. _requests: http://docs.python-requests.org/en/master/
@@ -166,19 +167,20 @@ Compute Node
 .. |w| replace:: ``weight-processing-lambda``
 .. _w: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/weight-processing-lambda
 
-We created two Lambda functions to process the data from the edge node. If the
-edge node were integrated into the single Raspberry Pi, we could have made it a
-single Lambda function. However, because the edge node was implemented on two
-different computers, we had to create two Lambda functions for our prototype.
+We created two Lambda functions to process the data from the edge node. If both
+the scale and camera were controlled by a single Raspberry Pi, we could have
+made it a single Lambda function. However, because the edge node was implemented
+on two different computers, we had to create two Lambda functions for our
+prototype.
 
 Color Processing Lambda
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``color-lambda`` function processed data from the camera. It used `Pillow`_
-to process the image and the root-mean-square formula to find the dominant
-color. Since we were filtering out a white background, this formula was better
-than the average because it compensates for any white in the object that was
-accidentally filtered out.
+to process the image data, and used the root-mean-square formula to find the
+dominant color. Since we were filtering out a white background, this formula was
+better than the average because it compensates for any white in the object that
+was accidentally filtered out.
 
 .. _Pillow: https://github.com/python-pillow/Pillow
 
@@ -192,14 +194,13 @@ to the weights already stored in a database table. The algorithm was as follows:
    the average weight.
 2. Query a database pre-seeded with information about inventory items to get all
    inventory items within 4kg of the measurement. (We could be much more
-   intelligent about this measurement, but for the hackathon, we just hardcoded
-   it.)
+   intelligent about this margin, but for the hackathon, we just hardcoded it.)
 3. Calculate a confidence that the item on the scale is indeed that object. We
    used a very simple metric for this: the value of the PMF of a normal
-   distribution centered around the expected weight, :math:`x` from the database
-   with a standard deviation :math:`d` also stored in the database. The height
-   of a normal distribution is not 1, so we had to multiply ba a factor
-   (:math:`1/k`) to convert it to a percentage.
+   distribution centered around the expected weight from the database,
+   :math:`x`, and a standard deviation :math:`d` also stored in the database.
+   The height of a normal distribution is not 1, so we had to multiply by a
+   factor (:math:`1/k`) to convert it to a percentage.
 
    .. image:: img/confidence-interval.png
 4. Store the confidences of each item in the DynamoDB database using the
@@ -232,7 +233,9 @@ Client Application
 .. _dt: https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/desktop
 
 We created a Qt application in Python to query data from the datastore and
-present it to the user.
+present it to the user. It showed the image of the package, as well as the
+calculated color from the ``color-lambda``, and the confidences generated by the
+``weight-processing-lambda``.
 
 Industrial Scale Implementation
 ===============================
@@ -240,10 +243,10 @@ Industrial Scale Implementation
 Our hackathon prototype cut a lot of corners, however we designed our project
 with scalability in mind. We began by thinking big-picture, and talked about
 what a full scale implementation would look like.  We thought of a few scenarios
-where this project could be used such as intra-warehouse use and rural areas
+where this project could be used such as inter-warehouse use and rural areas
 that currently have limited package tracking infrastructure. From these broad
 goals, we chose a set of features which we thought would be a good
-proof-of-concept and that is what we implemented during the hackathon.
+proof-of-concept, and that is what we implemented during the hackathon.
 
 By starting with how this project may scale, we were able to make informed
 decisions about the architecture of our system. We have already discussed some
@@ -280,7 +283,7 @@ We envision edge node deployments to remain for years. However, newer versions
 of the edge nodes could be made in this time period. To handle these new
 versions of edge nodes, while maintaining backwards compatibility, we would just
 write new Lambda functions to handle the new nodes, and point the newer edge
-nodes to the update Lambda function.
+nodes to the new Lambda function.
 
 High Traffic Intensity
 ----------------------
@@ -304,25 +307,22 @@ methods, we merely have to update the Lambda functions.
 
 A few examples of additional analysis methods include:
 
-- **Weight distribution over time.** An example may be a scenario where weight
-  data over a time period may help determine what the object is, would be an
-  item containing liquid. The liquid may slosh around while on the scale, and
-  cause the weight distribution to change.
+- **Weight distribution over time.** An example would be an item containing
+  liquid. The liquid may slosh around while on the scale, and cause the weight
+  distribution to change. This metric could potentially prevent someone from
+  replacing one item with an item with the same-weight, but different contents.
 
-  This metric could potentially prevent someone from replacing one item with an
-  item with the same-weight, but different contents.
-
-- **Image recognition.** We currently identify the color to help identify the
-  object, however, this metric is not very good. We could use neural networks to
-  do complex image recognition to better identify the item being examined.
+- **Image recognition.** We currently use the color to help identify the object,
+  however, this metric is not very good. We could use neural networks to do
+  complex image recognition to better identify the item being examined.
 
 Implementation of both of these analytics methods could be aided by the use of
 perceptual hashes.
 
 Since all of the computational power is concentrated in the Lambda compute
 nodes, these computationally-intensive ML processes can be done on x86
-processors running on AWS infrastructure rather than on edge nodes which may not
-even have a traditional processor.
+processors and GPUs running on AWS infrastructure rather than on edge nodes
+which may not even have a traditional processor.
 
 Improved Handling and Traceability
 ----------------------------------
