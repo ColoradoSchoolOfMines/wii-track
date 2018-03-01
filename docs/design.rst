@@ -24,6 +24,12 @@ Overview
    .. _Jack Garner: https://github.com/jhgarner
    .. _Robby Zampino: https://github.com/robozman
 
+   **HackCU Hackathon Prizes:**
+
+   - Judges Favorite
+   - Dish Network - Asset Tracking Award
+   - Amazon Web Services - Best Use of AWS
+
 __ https://github.com/ColoradoSchoolOfMines/wii-track
 
 Wii-Track is a system for package tracking designed for use in a variety of
