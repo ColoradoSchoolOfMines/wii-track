@@ -59,9 +59,11 @@ Implementation`_ below).
 There can be any number of edge nodes and compute nodes, and DynamoDB could be
 replaced by any other database.
 
-The overall data flow is as follows::
+The overall software architecture is visualized below:
 
-    Edge nodes -> Compute nodes -> Data store -> User facing applications
+.. image:: img/wii-track-architecture.png
+   :width: 80%
+   :align: center
 
 Here is a (non-comprehensive) list of considerations we discussed as we designed
 our system architecture:
