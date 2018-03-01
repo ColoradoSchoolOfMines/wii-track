@@ -457,10 +457,10 @@ project could be implemented at an industrial scale.</p>
 scenarios such as warehouses. The name Wii-Track comes from the fact that we
 used a WiiFit board as our scale for this prototype.</p>
 <p>Our overall goal was to make inventory tracking more cost-effective by utilizing
-sensors and data analytics to identify inventory items automatically, without
-human intervention. For the hackathon, we utilized two metrics (weight and
-color) to identify objects, however, we designed the system to scale to any
-number of additional metrics such as image recognition and infrared image data.</p>
+sensors and data analytics to identify inventory items automatically. For the
+hackathon, we utilized two metrics (weight and color) to identify objects,
+however, we designed the system to scale to any number of additional metrics
+such as image recognition and infrared image data.</p>
 <p>Our project was inspired by the Dish challenge at the HackCU hackathon. Their
 challenge was to create a system for asset tracking which utilized IOT
 technologies.</p>
@@ -522,9 +522,8 @@ entry into this challenge won.</p></li>
 <div class="section" id="hackathon-implementation">
 <h1>Hackathon Implementation</h1>
 <p>At HackCU, we implemented a proof of concept for this project. We built a
-prototype edge node, a prototype compute node, a prototype datastore, a simple
-GUI client to view the data in the datastore, and a simple GUI to control the
-edge node.</p>
+prototype edge node, compute node, and datastore; a simple GUI client to view
+the data in the datastore; and a simple GUI to control the edge node.</p>
 <div class="section" id="edge-node">
 <h2>Edge Node</h2>
 <div class="admonition note">
@@ -548,7 +547,7 @@ but this was infeasible since the Raspberry Pi does not have Bluetooth
 capabilities. We used the <a class="reference external" href="https://github.com/pierriko/wiiboard"><span class="docutils literal">wiiboard</span></a> library to communicate with the WiiFit. It
 provided us with a constant stream of data consisting of four data points. Each
 data point gave the weight measurement for one of the four quadrants on the
-board. We sent this data directly to AWS using the <a class="reference external" href="http://docs.python-requests.org/en/master/"><span class="docutils literal">requests</span></a> library.</p>
+WiiFit board. We sent this data directly to AWS using the <a class="reference external" href="http://docs.python-requests.org/en/master/"><span class="docutils literal">requests</span></a> library.</p>
 </div>
 <div class="section" id="compute-node">
 <h2>Compute Node</h2>
@@ -599,9 +598,9 @@ factor (<span class="formula">1 ⁄ <i>k</i></span>) to convert it to a perc
 <p>See the <a class="reference external" href="https://github.com/ColoradoSchoolOfMines/wii-track/tree/master/dynamodb"><span class="docutils literal">dynamodb</span></a> directory for the code related to creating the database, and
 some test data that we used during development.</p>
 </div>
-<p>We used AWS DynamoDB as our datastore. We used this in two places: to store
-manually-computed inventory weight information, and to store the results of our
-predictions from the Lambda functions.</p>
+<p>We used AWS DynamoDB as our datastore. We used it to store manually-computed
+inventory weight information, calculated RGB color values, and the results of
+our predictions from the Lambda functions.</p>
 </div>
 <div class="section" id="client-application">
 <h2>Client Application</h2>
@@ -634,7 +633,7 @@ when we thought about how we might deploy this project at scale in industrial
 environments, but which did not directly affect our system architecture choices.</p>
 <div class="section" id="additional-sensors">
 <h2>Additional Sensors</h2>
-<p>We had a very limited set of sensors to work with, and they were not even very
+<p>We had a very limited set of sensors to work with, and they were not very
 accurate. In a production environment, we would want to use much higher quality
 sensors, and increase the number of sensors utilized.</p>
 <p>One example of such a sensor is a barcode scanner. We could add that to our node
@@ -679,16 +678,16 @@ methods, we merely have to update the Lambda functions.</p>
 liquid. The liquid may slosh around while on the scale, and cause the weight
 distribution to change. This metric could potentially prevent someone from
 replacing one item with an item with the same-weight, but different contents.</p></li>
-<li><p><strong>Image recognition.</strong> We currently identify the color to help identify the
-object, however, this metric is not very good. We could use neural networks to
-do complex image recognition to better identify the item being examined.</p></li>
+<li><p><strong>Image recognition.</strong> We currently use the color to help identify the object,
+however, this metric is not very good. We could use neural networks to do
+complex image recognition to better identify the item being examined.</p></li>
 </ul>
 <p>Implementation of both of these analytics methods could be aided by the use of
 perceptual hashes.</p>
 <p>Since all of the computational power is concentrated in the Lambda compute
 nodes, these computationally-intensive ML processes can be done on x86
-processors running on AWS infrastructure rather than on edge nodes which may not
-even have a traditional processor.</p>
+processors and GPUs running on AWS infrastructure rather than on edge nodes
+which may not even have a traditional processor.</p>
 </div>
 <div class="section" id="improved-handling-and-traceability">
 <h2>Improved Handling and Traceability</h2>
