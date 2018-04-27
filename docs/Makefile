@@ -2,11 +2,12 @@ RSTFILES=presentation.rst
 43PDFFILES=$(patsubst %.rst,out/%-43.pdf,$(RSTFILES))
 169PDFFILES=$(patsubst %.rst,out/%-169.pdf,$(RSTFILES))
 1610PDFFILES=$(patsubst %.rst,out/%-1610.pdf,$(RSTFILES))
+HANDOUTFILES=$(patsubst %.rst,out/%-handout.pdf,$(RSTFILES))
 
 R2BOPTIONS=--theme=lug
 
 .PHONY: all
-all: $(43PDFFILES) $(169PDFFILES) $(1610PDFFILES)
+all: $(43PDFFILES) $(169PDFFILES) $(1610PDFFILES) $(HANDOUTFILES)
 
 out:
 	mkdir out
@@ -33,3 +34,8 @@ out/%.pdf: %.tex beamerthemelug.sty | graphics out
 
 %-43.tex: %.rst
 	rst2beamer $(R2BOPTIONS) --documentoptions="aspectratio=43" $< | grep -v amsmath > $@
+
+%-handout.tex: %.rst preamble.tex
+	rst2latex --documentoptions="letter" --use-latex-docinfo \
+	    --stylesheet=lmodern,preamble.tex $< | grep -v amsmath > $@
+	xelatex $@

@@ -1,6 +1,9 @@
 Wii-Track
 #########
 
+:Author: Sumner Evans, David Florness, Jack Garner, and Robby Zampino
+:Date: 2018-04-27
+
 Overview
 ========
 
@@ -21,6 +24,11 @@ System Architecture
 -------------------
 
 .. image:: img/wii-track-architecture.png
+   :width: 4in
+
+.. raw:: latex
+
+    \newpage
 
 Technical Constraints
 ---------------------
